@@ -28,28 +28,22 @@ Path to project root.
 
 ## Configuration
 
-Example config with explanations:
+Example config:
 
 ```json
 {
-  "name": "myapp", // Name of the app. (myapp.exe, libmyapp.a, myapp.dll)
-  "type": "exe", // Type [exe, so, dll]
-  "libraries": ["opengl32", "glew32", "glfw3", "SDL2"], // Adds all -llibname to arguments
+  "name": "myapp",
+  "type": "exe",
+  "libraries": ["opengl32", "glew32", "glfw3", "SDL2"],
   "package-manager": "pacman",
-  "WarningsAsErrors": false, // Only applied to .exe builds
-  "OptimizationLevel": 3, // Only applied to .exe builds [0,1,2,3] (regular gcc flags)
+  "WarningsAsErrors": false,
+  "OptimizationLevel": 3,
   "packages": {
-    /*
-        These commands will be run when package-manager is pacman.
-    */
     "pacman": [
       "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-glew",
       "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-SDL2",
       "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-glfw"
     ],
-    /*
-        These commands will be run when package-manager is apt
-    */
     "apt": [
       "sudo apt-get install -y libglew-dev",
       "sudo apt-get install -y libglfw3",
