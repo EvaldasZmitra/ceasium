@@ -84,4 +84,4 @@ day to publish it. I might put more effort into it, so it becomes better with ti
 If you end up liking it and want to support a solo developer - here's a link for
 that.
 
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gbraad)
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/EvaldasZmitra)
