@@ -2,7 +2,7 @@
 name = "ceasium"
 version = "0.1.0"
 description = "A hassle free C (gcc) JSON build system."
-
+readme = "README.md"
 authors = ["Evladas Zmitra <evaldaszmit@gmail.com>"]
 license = "MIT"
 
