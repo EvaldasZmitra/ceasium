@@ -2,9 +2,22 @@
 
 A hassle free JSON based C (gcc) build system.
 
+**_I have developed this on 2023-10-15 by myself. I have only minimally used it myself. It most likely still does not support some critical features for serious C development_**
+
 ## Introduction
 
 I like programming in C, but I hate Makefiles and CMake. It takes an effort to learn and they do not have an intuitive syntax so I keep having to look up how to use them. In addition to this, they are quite time consuming to setup. I do admit, they are extremely configurable and portable. However, rarely do I need anything complicated. So I created Ceasium, which is very simple C gcc build system.
+
+## Installation
+
+```
+pip install ceasium
+```
+
+## Prerequisites
+
+You have to have a gcc compiler. For windows I recommend [MSYS2](https://www.msys2.org/),
+it will allow you to install libraries via command line, which works with this build system.
 
 ## Usage
 
@@ -53,3 +66,22 @@ Example config:
   }
 }
 ```
+
+## Future Improvements
+
+Thinking about what could ceasium use to be better a few things come to mind:
+
+- Support for different compilers
+- Support for more flags
+- Parallel compilation (personally all of the projects I work on are small so speed is never an issue)
+- Package management. Adding pacman, apt lines might get tedious. Something like `ceasium install glew32` would be nice. For this an index would need to be maintained which maps the name `glew32` to a valid apt or pacman package.
+- Time for usage. I will be frank here - I have developed this on 2023-10-15, this needs to get more usage before I can know what is bad what is good and what needs to change.
+
+## Support
+
+This is a small system, took about half a day to develop and about another half a
+day to publish it. I might put more effort into it, so it becomes better with time.
+If you end up liking it and want to support a solo developer - here's a link for
+that.
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gbraad)
