@@ -1,0 +1,32 @@
+name: Python CI
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12
+
+      - name: Install Poetry
+        run: |
+          pip install poetry
+          poetry config pypi-token.pypi ${{secrets.PYPI_API_TOKEN}}
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Build and publish
+        run: poetry publish --build
+
+      - name: Cleanup
+        run: poetry cache clear --all
