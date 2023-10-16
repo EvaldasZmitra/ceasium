@@ -48,7 +48,8 @@ def build_o_files(path, build_path, build_config):
             o_file_dir,
             src_file_name[:-1] + "o"
         )
-        command = f"gcc -c {src_file_path} {includes} -o {o_file_path}"
+        command = f"{build_config['compiler']} -c {
+            src_file_path} {includes} -o {o_file_path}"
         run_command(command)
         o_files.append(o_file_path)
     return o_files
@@ -74,13 +75,15 @@ def build_exe(build_path, o_files, build_config):
         flags += "-Werror "
     optimization_level = build_config["OptimizationLevel"]
     flags += f"-O{str(optimization_level)} "
-    command = f'gcc {flags} {" ".join(o_files)} {lib_str} -o {exe_path}'
+    command = f'{build_config["compiler"]} {flags} {
+        " ".join(o_files)} {lib_str} -o {exe_path}'
     run_command(command)
 
 
 def build_dynamic_lib(build_path, o_files, build_config):
     library_path = os.path.join(build_path, f"{build_config['name']}.dll")
-    command = f'gcc -shared -o {library_path} {" ".join(o_files)}'
+    command = f'{build_config["compiler"]
+                 } -shared -o {library_path} {" ".join(o_files)}'
     run_command(command)
 
 
@@ -123,6 +126,7 @@ def init(args):
         """
 {
   "name": "myapp",
+  "compiler": "gcc",
   "type": "exe",
   "WarningsAsErrors": false,
   "OptimizationLevel": 0,

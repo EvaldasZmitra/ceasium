@@ -1,14 +1,14 @@
 # Ceasium
 
-A hassle free JSON based C (gcc) build system.
+A hassle free JSON based C build system.
 
 **_I have developed this on 2023-10-15 by myself. I have only minimally used it myself. It most likely still does not support some critical features for serious C development_**
 
 ## Introduction
 
-I like programming in C, but I hate Makefiles and CMake. It takes an effort to learn and they do not have an intuitive syntax so I keep having to look up how to use them. In addition to this, they are quite time consuming to setup. I do admit, they are extremely configurable and portable. However, rarely do I need anything complicated. So I created Ceasium, which is very simple C gcc build system.
+I like programming in C, but I hate Makefiles and CMake. It takes an effort to learn and they do not have an intuitive syntax so I keep having to look up how to use them. In addition to this, they are quite time consuming to setup. I do admit, they are extremely configurable and portable. However, rarely do I need anything complicated. So I created Ceasium, which is very simple C uild system.
 
-It works by creating gcc commands and running them in console. It uses pkg-config to add the correct flags for libraries you list in the build file.
+It works by creating compiler commands and running them in console. It uses pkg-config to add the correct flags for libraries you list in the build file.
 
 ## Installation
 
@@ -19,7 +19,7 @@ pip install ceasium
 ## Prerequisites
 
 - Python
-- GCC compiler
+- C compiler
 - pkg-config (usually installed by default on all Linux distros, incase of Windows MSYS2 should have it for MACs `brew install pkg-config`).
 
 ## Usage
@@ -50,6 +50,7 @@ Example config:
 {
   "name": "myapp",
   "type": "exe",
+  "compiler": "gcc",
   "libraries": ["opengl32", "glew32", "glfw3", "SDL2"],
   "package-manager": "pacman",
   "WarningsAsErrors": false,
@@ -74,7 +75,6 @@ Example config:
 
 Thinking about what could ceasium use to be better a few things come to mind:
 
-- Support for different compilers
 - Support for more flags
 - Parallel compilation (personally all of the projects I work on are small so speed is never an issue)
 - Package management. Adding pacman, apt lines might get tedious. Something like `ceasium install glew32` would be nice. For this an index would need to be maintained which maps the name `glew32` to a valid apt or pacman package.
