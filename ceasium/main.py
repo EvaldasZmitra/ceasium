@@ -11,8 +11,8 @@ src_folder_name = "src"
 obj_folder_name = "obj"
 
 
-def build_static_lib(build_path, o_files, library_name):
-    library_path = os.path.join(build_path, f"lib{library_name}.a")
+def build_static_lib(build_path, o_files, build_config):
+    library_path = os.path.join(build_path, f"lib{build_config['name']}.a")
     command = f'ar rcs {library_path} {" ".join(o_files)}'
     run_command(command)
 
@@ -55,8 +55,8 @@ def build_exe(build_path, o_files, build_config):
     run_command(command)
 
 
-def build_dynamic_lib(build_path, o_files, library_name):
-    library_path = os.path.join(build_path, f"{library_name}.dll")
+def build_dynamic_lib(build_path, o_files, build_config):
+    library_path = os.path.join(build_path, f"{build_config['name']}.dll")
     command = f'gcc -shared -o {library_path} {" ".join(o_files)}'
     run_command(command)
 
