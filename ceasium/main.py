@@ -79,7 +79,7 @@ def build_exe(build_path, o_files, build_config):
         flags += "-Werror "
     optimization_level = build_config["OptimizationLevel"]
     flags += f"-O{str(optimization_level)} "
-    command = f'{build_config["compiler"]} {flags} {
+    command = f'{build_config["compiler"]} {flags} {build_config["flags"]} {
         " ".join(o_files)} {lib_str} -o {exe_path}'
     run_command(command)
 
@@ -132,6 +132,7 @@ def init(args):
   "name": "myapp",
   "compiler": "gcc",
   "type": "exe",
+  "flags": "",
   "WarningsAsErrors": false,
   "OptimizationLevel": 0,
   "libraries": [],
