@@ -4,6 +4,7 @@ import os
 import platform
 import shutil
 import subprocess
+import pkgconfig
 
 project_build_file_name = "build.json"
 build_folder_name = "build"
@@ -17,10 +18,21 @@ def build_static_lib(build_path, o_files, build_config):
     run_command(command)
 
 
-def build_o_files(path, build_path):
+def create_include_string(path, libraries):
+    includes = [f'-I{os.path.join(path, "include")}']
+    for library in libraries:
+        try:
+            includes += pkgconfig.cflags(library).split(" ")
+        except Exception as e:
+            pass
+    return " ".join(set(includes))
+
+
+def build_o_files(path, build_path, build_config):
     src_path = os.path.join(path, src_folder_name)
     src_files = find_files(src_path)
     o_files = []
+    includes = create_include_string(path, build_config["libraries"])
     for (src_file_relative_path, src_file_name) in src_files:
         src_file_path = os.path.join(
             src_path,
@@ -36,16 +48,27 @@ def build_o_files(path, build_path):
             o_file_dir,
             src_file_name[:-1] + "o"
         )
-        command = f"gcc -c {src_file_path} -o {o_file_path}"
+        command = f"gcc -c {src_file_path} {includes} -o {o_file_path}"
         run_command(command)
         o_files.append(o_file_path)
     return o_files
 
 
+def create_lib_string(libraries):
+    str = ""
+    for library in libraries:
+        try:
+            lib_flags = pkgconfig.libs(library)
+            str += f"{lib_flags} "
+        except Exception as e:
+            str += f"-l{library} "
+            pass
+    return str
+
+
 def build_exe(build_path, o_files, build_config):
     exe_path = os.path.join(build_path, build_config["name"])
-    lib_str = " ".join(
-        ["-l" + library for library in build_config["libraries"]])
+    lib_str = create_lib_string(build_config["libraries"])
     flags = "-g -Wall -W "
     if build_config["WarningsAsErrors"]:
         flags += "-Werror "
@@ -64,7 +87,7 @@ def build_dynamic_lib(build_path, o_files, build_config):
 def build(args):
     build_config = read_config(args.path)
     build_path = os.path.join(args.path, build_folder_name)
-    o_files = build_o_files(args.path, build_path)
+    o_files = build_o_files(args.path, build_path, build_config)
     if build_config["type"] == "exe":
         build_exe(
             build_path,
@@ -158,8 +181,8 @@ def configure_arg_parser():
         type=str,
         help="""
         Package environment defaults to os name [Windows, Linux, Darwin].
-        A value can be passed to use different install commands defined in 
-        build.json. For example - define new env Snap, pass in value Snap and it 
+        A value can be passed to use different install commands defined in
+        build.json. For example - define new env Snap, pass in value Snap and it
         will use snap commands from build.json to install packages.""",
         default=os_name,
         required=False)

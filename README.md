@@ -8,6 +8,8 @@ A hassle free JSON based C (gcc) build system.
 
 I like programming in C, but I hate Makefiles and CMake. It takes an effort to learn and they do not have an intuitive syntax so I keep having to look up how to use them. In addition to this, they are quite time consuming to setup. I do admit, they are extremely configurable and portable. However, rarely do I need anything complicated. So I created Ceasium, which is very simple C gcc build system.
 
+It works by creating gcc commands and running them in console. It uses pkg-config to add the correct flags for libraries you list in the build file.
+
 ## Installation
 
 ```
@@ -16,8 +18,9 @@ pip install ceasium
 
 ## Prerequisites
 
-You have to have a gcc compiler. For windows I recommend [MSYS2](https://www.msys2.org/),
-it will allow you to install libraries via command line, which works with this build system.
+- Python
+- GCC compiler
+- pkg-config (usually installed by default on all Linux distros, incase of Windows MSYS2 should have it for MACs `brew install pkg-config`).
 
 ## Usage
 
