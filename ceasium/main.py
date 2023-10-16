@@ -76,12 +76,12 @@ def build_o_files(path, build_path, build_config):
             src_file_name[:-1] + "o"
         )
         o_files.append(o_file_path)
-        skip = True
+        skip = False
         if os.path.exists(o_file_path):
             o_file_mod_time = os.path.getmtime(o_file_path)
             delta_time = max_time - o_file_mod_time
-            if delta_time > 0:
-                skip = False
+            if delta_time < 0:
+                skip = True
         if not skip:
             command = f"{build_config['compiler']} -c {
                 src_file_path} {includes} -o {o_file_path}"
