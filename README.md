@@ -82,9 +82,6 @@ Thinking about what could ceasium use to be better a few things come to mind:
 
 ## Support
 
-This is a small system, took about half a day to develop and about another half a
-day to publish it. I might put more effort into it, so it becomes better with time.
-If you end up liking it and want to support a solo developer - here's a link for
-that.
+If you would like to support here's a link for that.
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/EvaldasZmitra)
