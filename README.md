@@ -75,7 +75,6 @@ Example config:
 
 Thinking about what could ceasium use to be better a few things come to mind:
 
-- Support for more flags
 - Parallel compilation (personally all of the projects I work on are small so speed is never an issue)
 - Package management. Adding pacman, apt lines might get tedious. Something like `ceasium install glew32` would be nice. For this an index would need to be maintained which maps the name `glew32` to a valid apt or pacman package.
 - Time for usage. I will be frank here - I have developed this on 2023-10-15, this needs to get more usage before I can know what is bad what is good and what needs to change.
