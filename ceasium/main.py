@@ -4,6 +4,7 @@ import os
 import platform
 import shutil
 import subprocess
+import time
 import pkgconfig
 from multiprocessing import Pool
 
@@ -11,6 +12,13 @@ project_build_file_name = "build.json"
 build_folder_name = "build"
 src_folder_name = "src"
 obj_folder_name = "obj"
+
+
+def remove_trailing_backslash(input_string):
+    if input_string.endswith("\\"):
+        return input_string[:-1]
+    else:
+        return input_string
 
 
 def build_static_lib(build_path, o_files, build_config):
@@ -35,12 +43,29 @@ def build_o_files(path, build_path, build_config):
     o_files = []
     includes = create_include_string(path, build_config["libraries"])
     commands = []
+    src_file_paths = []
+    for (src_file_relative_path, src_file_name) in src_files:
+        src_file_paths.append(os.path.join(
+            src_path,
+            src_file_relative_path,
+            src_file_name
+        ))
+    cache = {}
+    path_times = []
     for (src_file_relative_path, src_file_name) in src_files:
         src_file_path = os.path.join(
             src_path,
             src_file_relative_path,
             src_file_name
         )
+        h_paths = [remove_trailing_backslash(s).strip() for s in subprocess.check_output(
+            [build_config["compiler"], "-MM", src_file_path], universal_newlines=True).splitlines()[1:]]
+        max_time = os.path.getmtime(src_file_path)
+        for h_path in h_paths:
+            if h_path not in cache:
+                cache[h_path] = os.path.getmtime(h_path)
+            max_time = max(max_time, cache[h_path])
+
         o_file_dir = os.path.join(
             build_path,
             obj_folder_name
@@ -50,12 +75,25 @@ def build_o_files(path, build_path, build_config):
             o_file_dir,
             src_file_name[:-1] + "o"
         )
-        command = f"{build_config['compiler']} -c {
-            src_file_path} {includes} -o {o_file_path}"
-        commands.append(command)
         o_files.append(o_file_path)
+        skip = True
+        if os.path.exists(o_file_path):
+            o_file_mod_time = os.path.getmtime(o_file_path)
+            delta_time = max_time - o_file_mod_time
+            if delta_time > 0:
+                skip = False
+        if not skip:
+            command = f"{build_config['compiler']} -c {
+                src_file_path} {includes} -o {o_file_path}"
+            commands.append(command)
+        else:
+            print(f"Unchanged {src_file_path}.")
+        path_times.append((o_file_path, max_time))
     pool = Pool()
     pool.map(run_command, commands)
+    for (o_path, mod_max_time) in path_times:
+        os.utime(o_path, times=(time.time(), mod_max_time))
+
     return o_files
 
 
