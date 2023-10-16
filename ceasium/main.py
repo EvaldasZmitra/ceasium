@@ -5,6 +5,7 @@ import platform
 import shutil
 import subprocess
 import pkgconfig
+from multiprocessing import Pool
 
 project_build_file_name = "build.json"
 build_folder_name = "build"
@@ -33,6 +34,7 @@ def build_o_files(path, build_path, build_config):
     src_files = find_files(src_path)
     o_files = []
     includes = create_include_string(path, build_config["libraries"])
+    commands = []
     for (src_file_relative_path, src_file_name) in src_files:
         src_file_path = os.path.join(
             src_path,
@@ -50,8 +52,10 @@ def build_o_files(path, build_path, build_config):
         )
         command = f"{build_config['compiler']} -c {
             src_file_path} {includes} -o {o_file_path}"
-        run_command(command)
+        commands.append(command)
         o_files.append(o_file_path)
+    pool = Pool()
+    pool.map(run_command, commands)
     return o_files
 
 
