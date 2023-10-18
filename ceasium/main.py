@@ -58,8 +58,14 @@ def build_o_files(path, build_path, build_config):
             src_file_relative_path,
             src_file_name
         )
-        h_paths = [remove_trailing_backslash(s).strip() for s in subprocess.check_output(
-            [build_config["compiler"], "-MM", src_file_path], universal_newlines=True).splitlines()[1:]]
+        h_paths = []
+        compiler_flags_cmd = [build_config["compiler"], "-MM", src_file_path]
+        compiler_flags = subprocess.check_output(
+            compiler_flags_cmd,
+            universal_newlines=True
+        )
+        for s in compiler_flags.splitlines()[1:]:
+            h_paths.append(remove_trailing_backslash(s).strip())
         max_time = os.path.getmtime(src_file_path)
         for h_path in h_paths:
             if h_path not in cache:
@@ -83,8 +89,8 @@ def build_o_files(path, build_path, build_config):
             if delta_time <= 0:
                 skip = True
         if not skip:
-            command = f"{build_config['compiler']} -c {
-                src_file_path} {includes} -o {o_file_path}"
+            cc = build_config['compiler']
+            command = f"{cc} -c {src_file_path} {includes} -o {o_file_path}"
             commands.append(command)
         else:
             print(f"Unchanged {src_file_path}.")
@@ -117,15 +123,17 @@ def build_exe(build_path, o_files, build_config):
         flags += "-Werror "
     optimization_level = build_config["OptimizationLevel"]
     flags += f"-O{str(optimization_level)} "
-    command = f'{build_config["compiler"]} {flags} {build_config["flags"]} {
-        " ".join(o_files)} {lib_str} -o {exe_path}'
+    flags += build_config["flags"]
+    cc = build_config["compiler"]
+
+    command = f'{cc} {flags} {" ".join(o_files)} {lib_str} -o {exe_path}'
     run_command(command)
 
 
 def build_dynamic_lib(build_path, o_files, build_config):
     library_path = os.path.join(build_path, f"{build_config['name']}.dll")
-    command = f'{build_config["compiler"]
-                 } -shared -o {library_path} {" ".join(o_files)}'
+    cc = build_config["compiler"]
+    command = f'{cc} -shared -o {library_path} {" ".join(o_files)}'
     run_command(command)
 
 
