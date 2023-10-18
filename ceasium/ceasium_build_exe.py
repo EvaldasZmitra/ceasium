@@ -8,33 +8,48 @@ def build_exe(build_path, o_files, build_config):
     exe_path = os.path.join(build_path, build_config["name"])
     flags = gen_flags(build_config)
     cc = build_config["compiler"]
-    command = f'{cc} {flags} {" ".join(o_files)} -o {exe_path}'
+    o_files = " ".join(o_files)
+    compiler_flags = " ".join(flags["compiler_flags"])
+    linker_flags = " ".join(flags["linker_flags"])
+    command = f'{cc} {compiler_flags} {o_files} {linker_flags} -o {exe_path}'
     run_command(command)
 
 
 def gen_flags(build_config):
     lib_flags = gen_flags_libs(build_config["libraries"])
     extra_flags = gen_flags_extra(build_config)
-    return lib_flags + extra_flags
+    unique_flags = set(lib_flags + extra_flags)
+    linker_flags = []
+    compiler_flags = []
+    for flag in unique_flags:
+        if flag[0].lower() == 'l':
+            linker_flags.append(flag)
+        else:
+            compiler_flags.append(flag)
+    return {
+        "linker_flags": ["-" + f for f in linker_flags],
+        "compiler_flags": ["-" + f for f in compiler_flags]
+    }
 
 
 def gen_flags_extra(build_config):
-    flags = "-g -Wall -W "
+    flags = ["g", "Wall", "W"]
     if build_config["WarningsAsErrors"]:
-        flags += "-Werror "
+        flags.append("Werror")
     optimization_level = build_config["OptimizationLevel"]
-    flags += f"-O{str(optimization_level)} "
+    flags.append(f"O{str(optimization_level)}")
     flags += build_config["flags"]
     return flags
 
 
 def gen_flags_libs(libraries):
-    str = ""
+    flags = []
     for library in libraries:
         try:
             lib_flags = pkgconfig.libs(library)
-            str += f"{lib_flags} "
+            pkg_config_flags = [s.strip() for s in lib_flags.split(" ")]
+            flags += [x[1:] for x in pkg_config_flags if x]
         except Exception as e:
-            str += f"-l{library} "
+            flags.append("l"+library)
             pass
-    return str
+    return flags

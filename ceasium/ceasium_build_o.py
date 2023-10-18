@@ -16,7 +16,8 @@ def build_o_files(path, build_config):
     src_files = find_files(os.path.join(path, src_folder_name))
     cmds = []
     o_mod_times = []
-    for (src_path, o_path) in get_src_o_path_pairs(path, src_files):
+    file_pairs = get_src_o_path_pairs(path, src_files)
+    for (src_path, o_path) in file_pairs:
         src_mod_time = get_src_mod_time(src_path, build_config)
         o_mod_time = get_o_mod_time(o_path)
         if src_mod_time > o_mod_time:
@@ -31,7 +32,7 @@ def build_o_files(path, build_config):
     pool.map(run_command, cmds)
     for (o_path, mod_max_time) in o_mod_times:
         os.utime(o_path, times=(time.time(), mod_max_time))
-    return [o_path for (o_path, _) in o_mod_times]
+    return [o_path for (_, o_path) in file_pairs]
 
 
 def get_included_files(src_file_path, build_config):
