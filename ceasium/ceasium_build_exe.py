@@ -5,13 +5,16 @@ from .ceasium_system_util import run_command
 
 
 def build_exe(build_path, o_files, build_config):
-    exe_path = os.path.join(build_path, build_config["name"])
+    result_path = os.path.join(build_path, build_config["name"])
     flags = gen_flags(build_config)
+    if build_config["type"] == "dll":
+        result_path = os.path.join(build_path, f"{build_config["name"]}.dll")
+        flags["compiler_flags"].append("-shared")
     cc = build_config["compiler"]
     o_files = " ".join(o_files)
-    compiler_flags = " ".join(flags["compiler_flags"])
+    cc_flags = " ".join(flags["compiler_flags"])
     linker_flags = " ".join(flags["linker_flags"])
-    command = f'{cc} {compiler_flags} {o_files} {linker_flags} -o {exe_path}'
+    command = f'{cc} {cc_flags} {o_files} {linker_flags} -o {result_path}'
     run_command(command)
 
 
