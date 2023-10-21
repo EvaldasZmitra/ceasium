@@ -41,17 +41,18 @@ Ceasium provides these commands:
 ceasium init // Creates an empty c project
 ceasium install // installs libraries defined in build.json
 ceasium build // Builds .exe (default), .a or .dll based on configuration
-ceasium run // Runs the built exe file
 ceasium clean // Removes entire build directory
 ```
 
-Arguments
-
-All commands:
-
-`--path=<project-root-path>`
-
-Path to project root.
+- `init`
+  - [Optional] `--path=<value>` defaults to current path
+- `install`
+  - [Optional] `--path=<value>` defaults to current path
+  - [Required] Package manager name.
+- `build`
+  - [Optional] `--path=<value>` defaults to current path
+- `clean`
+  - [Optional] `--path=<value>` defaults to current path
 
 ## Configuration
 
@@ -62,21 +63,19 @@ Example config:
   "name": "myapp",
   "type": "exe",
   "compiler": "gcc",
-  "libraries": ["opengl32", "glew32", "glfw3", "SDL2"],
-  "flags": "",
+  "libraries": ["glew32", "SDL2"],
+  "flags": {
+    "compiler": ["-g"],
+    "linker": ["-lopengl"]
+  },
   "package-manager": "pacman",
-  "WarningsAsErrors": false,
-  "OptimizationLevel": 3,
   "packages": {
     "pacman": [
       "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-glew",
-      "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-SDL2",
-      "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-glfw"
+      "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-SDL2"
     ],
     "apt": [
       "sudo apt-get install -y libglew-dev",
-      "sudo apt-get install -y libglfw3",
-      "sudo apt-get install -y libglfw3-dev",
       "sudo apt-get install -y libglfw3"
     ]
   }
@@ -85,12 +84,11 @@ Example config:
 
 - `name`: Name of the exe or library that will be built.
 - `type`: ["so", "dll", "exe"] what will be built.
-- `compiler`: ["gcc", "clang" ...other]. The compiler should support standard c syntax and flags.
+- `compiler`: ["gcc", "clang" ...other].
 - `libraries`: A list of library names as they would be in pkg-config.
-- `flags`: extra flags to add apart from the ones defined as separate sections.
+- `flags:compiler`: extra flags to be added right after compiler command.
+- `flags:linker`: extra flags to be added at the end of compiler command.
 - `package-manager`: package manager commands to use for `ceasium install`. The section of this name should be defined under packages.
-- `WarningAsError`: should warnings be treaded as errors.
-- `OptimizationLevel`: [0,1,2,3] like you would use with an -O flag
 - `packages`: list of commands for package installation based of different package managers.
 
 ## Support

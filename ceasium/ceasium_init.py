@@ -20,11 +20,11 @@ def init(args):
   "name": "myapp",
   "compiler": "gcc",
   "type": "exe",
-  "flags": "",
-  "WarningsAsErrors": false,
-  "OptimizationLevel": 0,
+  "flags": {
+    "compiler": [],
+    "linker": []
+  },
   "libraries": [],
-  "package-manager": "pacman",
   "packages": {
     "pacman": [],
     "apt": []

@@ -2,37 +2,33 @@ import os
 import argparse
 import json
 import os
-import platform
 
 
 project_build_file_name = "build.json"
 
 
 def configure_arg_parser():
-    os_name = platform.system()
-    parser = argparse.ArgumentParser(
-        description="Builds a C project.")
-    parser.add_argument(
-        'action',
-        choices=["init", "build", "install", "run", "clean"],
-        type=str
+    parser = argparse.ArgumentParser(description="Builds a C project.")
+    subparsers = parser.add_subparsers(
+        dest='command',
+        help="Available commands"
     )
-    parser.add_argument(
-        "--path",
-        type=str,
-        help="The root path of the project.",
-        default=os.getcwd(),
-        required=False)
-    parser.add_argument(
-        "--package-env",
-        type=str,
+    init_parser = subparsers.add_parser("init")
+    init_parser.add_argument("--path", default=os.getcwd())
+    install_parser = subparsers.add_parser('install', help='Installs packages')
+    install_parser.add_argument(
+        'package_manager',
         help="""
         Package environment defaults to os name [Windows, Linux, Darwin].
         A value can be passed to use different install commands defined in
         build.json. For example - define new env Snap, pass in value Snap and it
-        will use snap commands from build.json to install packages.""",
-        default=os_name,
-        required=False)
+        will use snap commands from build.json to install packages."""
+    )
+    install_parser.add_argument("--path", default=os.getcwd())
+    build_parser = subparsers.add_parser("build")
+    build_parser.add_argument("--path", default=os.getcwd())
+    clean_parser = subparsers.add_parser("clean")
+    clean_parser.add_argument("--path", default=os.getcwd())
     return parser
 
 
