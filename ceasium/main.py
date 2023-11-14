@@ -1,3 +1,4 @@
+from .ceasium_vscode import vscode
 from .ceasium_build import build
 from .ceasium_clean import clean
 from .ceasium_init import init
@@ -16,6 +17,8 @@ def main():
             init(args)
         if args.command == "install":
             install(args)
+        if args.command == "vscode":
+            vscode(args)
     except Exception as e:
         print(e)
 

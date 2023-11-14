@@ -58,8 +58,11 @@ def gen_explicit_lib_flags(libraries):
 def gen_pkg_config_flags(libraries):
     cflags = ""
     if len(libraries) > 0:
-        try:
-            cflags += " " + pkgconfig.libs(" ".join(libraries))
-        except Exception:
-            pass
-    return cflags
+        for lib in libraries:
+            try:
+                cflags += " " + pkgconfig.libs(lib)
+            except Exception:
+                pass
+        return cflags
+    else:
+        return ""
