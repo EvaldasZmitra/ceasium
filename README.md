@@ -63,12 +63,11 @@ Example config:
   "name": "myapp",
   "type": "exe",
   "compiler": "gcc",
-  "libraries": ["glew32", "SDL2"],
+  "libraries": ["glew", "SDL2"],
   "flags": {
     "compiler": ["-g"],
     "linker": ["-lopengl"]
   },
-  "package-manager": "pacman",
   "packages": {
     "pacman": [
       "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-glew",
