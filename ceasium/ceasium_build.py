@@ -17,9 +17,8 @@ def build_compiler(build_path, o_files, build_config):
     result_path = os.path.join(build_path, build_config["name"])
     cc = build_config["compiler"]
     o_files = " ".join(o_files)
-    cc_flags = gen_compiler_flags(build_config)
     linker_flags = gen_linker_flags(build_config)
-    command = f'{cc} {cc_flags} {o_files} -o {result_path} {linker_flags}'
+    command = f'{cc} {o_files} -o {result_path} {linker_flags}'
     run_command(command)
 
 
@@ -31,16 +30,6 @@ def build(args):
         build_archive(build_path, o_files, build_config)
     else:
         build_compiler(build_path, o_files, build_config)
-
-
-def gen_compiler_flags(build_config):
-    return gen_explicit_compiler_flags(
-        build_config['flags']['compiler']
-    )
-
-
-def gen_explicit_compiler_flags(flags):
-    return " ".join(flags)
 
 
 def gen_linker_flags(build_config):

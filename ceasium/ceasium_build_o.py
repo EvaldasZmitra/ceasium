@@ -81,8 +81,9 @@ def get_src_o_path_pairs(path, src_files):
 
 def gen_build_o_file_cmd(path, src_path, o_path, build_config):
     cc = build_config['compiler']
+    cc_flags = gen_compiler_flags(build_config)
     includes = create_include_string(path, build_config["libraries"])
-    return f"{cc} {includes} -c {src_path} -o {o_path}"
+    return f"{cc} {cc_flags} {includes} -c {src_path} -o {o_path}"
 
 
 def create_include_string(path, libraries):
@@ -93,3 +94,13 @@ def create_include_string(path, libraries):
         except Exception as e:
             pass
     return " ".join(set(includes))
+
+
+def gen_compiler_flags(build_config):
+    return gen_explicit_compiler_flags(
+        build_config['flags']['compiler']
+    )
+
+
+def gen_explicit_compiler_flags(flags):
+    return " ".join(flags)
