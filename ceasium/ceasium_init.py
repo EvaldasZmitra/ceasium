@@ -21,7 +21,7 @@ def init(args):
   "compiler": "gcc",
   "type": "exe",
   "flags": {
-    "compiler": [],
+    "compiler": ["-g", "-Wall", "-Werror"],
     "linker": []
   },
   "libraries": [],
@@ -41,5 +41,12 @@ int main(int argc, char *argv[])
 {
     printf("Hello World!");
 }
+"""
+    )
+    write_if_not_exists(
+        os.path.join(src_path, ".gitignore"),
+        """
+build
+.vscode
 """
     )

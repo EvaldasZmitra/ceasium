@@ -13,12 +13,21 @@ def build_archive(build_path, o_files, build_config):
     run_command(command)
 
 
-def build_compiler(build_path, o_files, build_config):
+def build_exe(build_path, o_files, build_config):
     result_path = os.path.join(build_path, build_config["name"])
     cc = build_config["compiler"]
     o_files = " ".join(o_files)
     linker_flags = gen_linker_flags(build_config)
     command = f'{cc} {o_files} -o {result_path} {linker_flags}'
+    run_command(command)
+
+
+def build_dll(build_path, o_files, build_config):
+    result_path = os.path.join(build_path, build_config["name"])
+    cc = build_config["compiler"]
+    o_files = " ".join(o_files)
+    linker_flags = gen_linker_flags(build_config)
+    command = f'{cc} -shared {o_files} -o {result_path} {linker_flags}'
     run_command(command)
 
 
@@ -28,8 +37,10 @@ def build(args):
     o_files = build_o_files(args.path, build_config)
     if build_config["type"] == "so":
         build_archive(build_path, o_files, build_config)
-    else:
-        build_compiler(build_path, o_files, build_config)
+    if build_config["type"] == "exe":
+        build_exe(build_path, o_files, build_config)
+    if build_config["type"] == "dll":
+        build_dll(build_path, o_files, build_config)
 
 
 def gen_linker_flags(build_config):

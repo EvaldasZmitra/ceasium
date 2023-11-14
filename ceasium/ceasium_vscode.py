@@ -62,7 +62,7 @@ def gen_launch_json(name):
         ],
         "version": "2.0.0"
     }
-    return json.dumps(launch_json)
+    return json.dumps(launch_json, indent=4)
 
 
 def gen_c_cpp_properties_json(libraries, path):
@@ -84,7 +84,7 @@ def gen_c_cpp_properties_json(libraries, path):
         ],
         "version": 4
     }
-    return json.dumps(c_cpp_json)
+    return json.dumps(c_cpp_json, indent=4)
 
 
 def get_include_paths(libraries):
