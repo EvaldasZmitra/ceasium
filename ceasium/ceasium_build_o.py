@@ -5,7 +5,7 @@ import pkgconfig
 from multiprocessing import Pool
 
 from .ceasium_system_util import find_files, remove_trailing_backslash, run_command, ensure_directory_exists
-
+from .ceasium_build_common import gen_compiler_flags
 
 build_folder_name = "build"
 src_folder_name = "src"
@@ -94,13 +94,3 @@ def create_include_string(path, libraries):
         except Exception as e:
             pass
     return " ".join(set(includes))
-
-
-def gen_compiler_flags(build_config):
-    return gen_explicit_compiler_flags(
-        build_config['flags']['compiler']
-    )
-
-
-def gen_explicit_compiler_flags(flags):
-    return " ".join(flags)

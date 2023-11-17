@@ -3,6 +3,7 @@ import pkgconfig
 from .ceasium_config import read_config
 from .ceasium_build_o import build_o_files
 from .ceasium_system_util import run_command
+from .ceasium_build_common import gen_compiler_flags
 
 build_folder_name = "build"
 
@@ -16,18 +17,20 @@ def build_archive(build_path, o_files, build_config):
 def build_exe(build_path, o_files, build_config):
     result_path = os.path.join(build_path, build_config["name"])
     cc = build_config["compiler"]
+    cc_flags = gen_compiler_flags(build_config)
     o_files = " ".join(o_files)
     linker_flags = gen_linker_flags(build_config)
-    command = f'{cc} {o_files} -o {result_path} {linker_flags}'
+    command = f'{cc} {cc_flags} {o_files} -o {result_path} {linker_flags}'
     run_command(command)
 
 
 def build_dll(build_path, o_files, build_config):
     result_path = os.path.join(build_path, build_config["name"])
     cc = build_config["compiler"]
+    cc_flags = gen_compiler_flags(build_config)
     o_files = " ".join(o_files)
     linker_flags = gen_linker_flags(build_config)
-    command = f'{cc} -shared {o_files} -o {result_path} {linker_flags}'
+    command = f'{cc} {cc_flags} -shared {o_files} -o {result_path} {linker_flags}'
     run_command(command)
 
 
