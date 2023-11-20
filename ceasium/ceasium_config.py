@@ -31,6 +31,8 @@ def configure_arg_parser():
     clean_parser.add_argument("--path", default=os.getcwd())
     vs_code_parser = subparsers.add_parser("vscode")
     vs_code_parser.add_argument("--path", default=os.getcwd())
+    run_parser = subparsers.add_parser("run")
+    run_parser.add_argument("--path", default=os.getcwd())
     return parser
 
 

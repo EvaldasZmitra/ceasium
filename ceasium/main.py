@@ -2,6 +2,7 @@ from .ceasium_vscode import vscode
 from .ceasium_build import build
 from .ceasium_clean import clean
 from .ceasium_init import init
+from .ceasium_run import run
 from .ceasium_install import install
 from .ceasium_config import parse_arguments
 
@@ -9,6 +10,8 @@ from .ceasium_config import parse_arguments
 def main():
     try:
         args = parse_arguments()
+        if args.command == "run":
+            run(args)
         if args.command == "build":
             build(args)
         if args.command == "clean":

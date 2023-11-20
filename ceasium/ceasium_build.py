@@ -15,7 +15,7 @@ def build_archive(build_path, o_files, build_config):
 
 
 def build_exe(build_path, o_files, build_config):
-    result_path = os.path.join(build_path, build_config["name"])
+    result_path = os.path.join(build_path, build_config["name"] + ".exe")
     cc = build_config["compiler"]
     cc_flags = gen_compiler_flags(build_config)
     o_files = " ".join(o_files)
@@ -25,12 +25,12 @@ def build_exe(build_path, o_files, build_config):
 
 
 def build_dll(build_path, o_files, build_config):
-    result_path = os.path.join(build_path, build_config["name"])
+    result_path = os.path.join(build_path, build_config["name"] + ".dll")
     cc = build_config["compiler"]
-    cc_flags = gen_compiler_flags(build_config)
+    cc_flags = gen_compiler_flags(build_config) + ["-shared"]
     o_files = " ".join(o_files)
     linker_flags = gen_linker_flags(build_config)
-    command = f'{cc} {cc_flags} -shared {o_files} -o {result_path} {linker_flags}'
+    command = f'{cc} {cc_flags} {o_files} -o {result_path} {linker_flags}'
     run_command(command)
 
 
