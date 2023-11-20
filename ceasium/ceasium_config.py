@@ -33,6 +33,8 @@ def configure_arg_parser():
     vs_code_parser.add_argument("--path", default=os.getcwd())
     run_parser = subparsers.add_parser("run")
     run_parser.add_argument("--path", default=os.getcwd())
+    test_parser = subparsers.add_parser("test")
+    test_parser.add_argument("--path", default=os.getcwd())
     return parser
 
 

@@ -3,6 +3,7 @@ from .ceasium_build import build
 from .ceasium_clean import clean
 from .ceasium_init import init
 from .ceasium_run import run
+from .ceasium_test import test
 from .ceasium_install import install
 from .ceasium_config import parse_arguments
 
@@ -12,6 +13,8 @@ def main():
         args = parse_arguments()
         if args.command == "run":
             run(args)
+        if args.command == "test":
+            test(args)
         if args.command == "build":
             build(args)
         if args.command == "clean":

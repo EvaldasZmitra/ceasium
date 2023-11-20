@@ -8,15 +8,14 @@ from .ceasium_system_util import find_files, remove_trailing_backslash, run_comm
 from .ceasium_build_common import gen_compiler_flags
 
 build_folder_name = "build"
-src_folder_name = "src"
 o_folder_name = "o"
 
 
-def build_o_files(path, build_config):
-    src_files = find_files(os.path.join(path, src_folder_name))
+def build_o_files(path, build_config, folder_name):
+    src_files = find_files(os.path.join(path, folder_name))
     cmds = []
     o_mod_times = []
-    file_pairs = get_src_o_path_pairs(path, src_files)
+    file_pairs = get_src_o_path_pairs(path, src_files, folder_name)
     for (src_path, o_path) in file_pairs:
         src_mod_time = get_src_mod_time(src_path, build_config)
         o_mod_time = get_o_mod_time(o_path)
@@ -62,12 +61,12 @@ def get_o_mod_time(path):
     return 0
 
 
-def get_src_o_path_pairs(path, src_files):
+def get_src_o_path_pairs(path, src_files, folder_name):
     paths = []
     for (src_file_relative_path, src_file_name) in src_files:
         src_path = os.path.join(
             path,
-            src_folder_name,
+            folder_name,
             src_file_relative_path,
             src_file_name)
         o_path = os.path.join(

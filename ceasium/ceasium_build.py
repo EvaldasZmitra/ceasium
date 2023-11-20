@@ -14,6 +14,16 @@ def build_archive(build_path, o_files, build_config):
     run_command(command)
 
 
+def build_tests(build_path, o_files, build_config):
+    result_path = os.path.join(build_path, "tests.exe")
+    cc = build_config["compiler"]
+    cc_flags = gen_compiler_flags(build_config)
+    o_files = " ".join(o_files)
+    linker_flags = gen_linker_flags(build_config)
+    command = f'{cc} {cc_flags} {o_files} -o {result_path} {linker_flags}'
+    run_command(command)
+
+
 def build_exe(build_path, o_files, build_config):
     result_path = os.path.join(build_path, build_config["name"] + ".exe")
     cc = build_config["compiler"]
@@ -37,7 +47,7 @@ def build_dll(build_path, o_files, build_config):
 def build(args):
     build_config = read_config(args.path)
     build_path = os.path.join(args.path, build_folder_name)
-    o_files = build_o_files(args.path, build_config)
+    o_files = build_o_files(args.path, build_config, "src")
     if build_config["type"] == "so":
         build_archive(build_path, o_files, build_config)
     if build_config["type"] == "exe":
