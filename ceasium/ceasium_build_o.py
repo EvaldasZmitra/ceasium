@@ -4,7 +4,7 @@ import time
 import pkgconfig
 from multiprocessing import Pool
 
-from .ceasium_system_util import find_files, remove_trailing_backslash, run_command, ensure_directory_exists
+from .ceasium_system_util import colors, find_files, remove_trailing_backslash, run_command, ensure_directory_exists
 from .ceasium_build_common import gen_compiler_flags
 
 build_folder_name = "build"
@@ -24,7 +24,7 @@ def build_o_files(path, build_config, folder_name):
             cmds.append(cmd)
             o_mod_times.append((o_path, src_mod_time))
         else:
-            print(f"Unchanged {src_path}.")
+            print(f"{colors.BLUE}Unchanged{colors.RESET} {src_path}.")
     ensure_directory_exists(os.path.join(
         path, build_folder_name, o_folder_name))
     pool = Pool()
