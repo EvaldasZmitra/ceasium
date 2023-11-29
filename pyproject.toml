@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ceasium"
-version = "0.11.1"
+version = "0.12.0"
 description = "A hassle free C (gcc) JSON build system."
 readme = "README.md"
 authors = ["Evladas Zmitra <evaldaszmit@gmail.com>"]

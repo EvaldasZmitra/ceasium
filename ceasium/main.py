@@ -23,8 +23,6 @@ def main():
             init(args)
         if args.command == "install":
             install(args)
-        if args.command == "vscode":
-            vscode(args)
     except Exception as e:
         print(e)
 
