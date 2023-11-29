@@ -60,7 +60,7 @@ int main()
 """
     )
     write_if_not_exists(
-        os.path.join(src_path, ".gitignore"),
+        os.path.join(args.path, ".gitignore"),
         """
 build
 .vscode

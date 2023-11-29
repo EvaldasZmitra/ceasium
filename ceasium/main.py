@@ -1,4 +1,3 @@
-from .ceasium_vscode import vscode
 from .ceasium_build import build
 from .ceasium_clean import clean
 from .ceasium_init import init
