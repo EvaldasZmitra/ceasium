@@ -8,22 +8,19 @@ from .ceasium_config import parse_arguments
 
 
 def main():
-    try:
-        args = parse_arguments()
-        if args.command == "run":
-            run(args)
-        if args.command == "test":
-            test(args)
-        if args.command == "build":
-            build(args)
-        if args.command == "clean":
-            clean(args)
-        if args.command == "init":
-            init(args)
-        if args.command == "install":
-            install(args)
-    except Exception as e:
-        print(e)
+    args = parse_arguments()
+    if args.command == "run":
+        run(args)
+    if args.command == "test":
+        test(args)
+    if args.command == "build":
+        build(args)
+    if args.command == "clean":
+        clean(args)
+    if args.command == "init":
+        init(args)
+    if args.command == "install":
+        install(args)
 
 
 if __name__ == "__main__":

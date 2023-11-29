@@ -15,6 +15,8 @@ class colors:
     WHITE = '\033[97m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+    LIGHT_GREY = '\033[37m'
+    DARK_GREY = '\033[90m'
 
 
 def execute(cmd):
