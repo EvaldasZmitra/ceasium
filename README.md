@@ -4,7 +4,7 @@ A hassle free JSON based C build system.
 
 **_Only tested with gcc_**
 
-**_I have developed this on 2023-10-15 by myself. I have only minimally used it myself. It most likely still does not support some critical features for serious C development_**
+**_I have only minimally used it myself. It most likely still does not support some critical features for serious C development_**
 
 ## Introduction
 
@@ -89,9 +89,3 @@ Example config:
 - `flags:linker`: extra flags to be added at the end of compiler command.
 - `package-manager`: package manager commands to use for `ceasium install`. The section of this name should be defined under packages.
 - `packages`: list of commands for package installation based of different package managers.
-
-## Support
-
-If you would like to support here's a link for that.
-
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/EvaldasZmitra)
