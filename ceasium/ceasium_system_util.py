@@ -1,7 +1,5 @@
 import os
-import os
 import subprocess
-from enum import Enum
 
 colors_arr = [
     '\033[0m',
@@ -88,18 +86,28 @@ def find_files(base_path, relative_path=""):
 
 
 def run_command(command):
-    print(command)
-    for line in execute(command):
-        print(line, end="")
+    result = ""
+    for l in execute(command):
+        try:
+            result += l
+        except Exception as e:
+            pass
+    return result
 
 
 def run_gcc_command(command):
-    print(command)
     true_cmd = command.replace(os.linesep, " ").replace(os.linesep, " ")
     for value in colors_arr:
         true_cmd = true_cmd.replace(value, "")
-    for line in execute(true_cmd):
-        print(line, end="")
+    # v = run_command(true_cmd)
+    # return v
+    err = subprocess.run(
+        true_cmd,
+        shell=True,
+        capture_output=True,
+        universal_newlines=True
+    ).stderr
+    return err
 
 
 def remove_trailing_backslash(input_string):
