@@ -3,6 +3,21 @@ import os
 import subprocess
 from enum import Enum
 
+colors_arr = [
+    '\033[0m',
+    '\033[91m',
+    '\033[92m',
+    '\033[93m',
+    '\033[94m',
+    '\033[95m',
+    '\033[96m',
+    '\033[97m',
+    '\033[1m',
+    '\033[4m',
+    '\033[37m',
+    '\033[90m'
+]
+
 
 class colors:
     RESET = '\033[0m'
@@ -17,6 +32,22 @@ class colors:
     UNDERLINE = '\033[4m'
     LIGHT_GREY = '\033[37m'
     DARK_GREY = '\033[90m'
+
+
+def print_red(text):
+    print(f"{colors.RED}{text}{colors.RESET}")
+
+
+def print_green(text):
+    print(f"{colors.GREEN}{text}{colors.RESET}")
+
+
+def print_blue(text):
+    print(f"{colors.BLUE}{text}{colors.RESET}")
+
+
+def print_blue(text):
+    print(f"{colors.BLUE}{text}{colors.RESET}")
 
 
 def execute(cmd):
@@ -59,6 +90,15 @@ def find_files(base_path, relative_path=""):
 def run_command(command):
     print(command)
     for line in execute(command):
+        print(line, end="")
+
+
+def run_gcc_command(command):
+    print(command)
+    true_cmd = command.replace(os.linesep, " ").replace(os.linesep, " ")
+    for value in colors_arr:
+        true_cmd = true_cmd.replace(value, "")
+    for line in execute(true_cmd):
         print(line, end="")
 
 
