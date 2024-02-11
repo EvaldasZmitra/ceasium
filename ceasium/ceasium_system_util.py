@@ -40,6 +40,10 @@ def print_green(text):
     print(f"{colors.GREEN}{text}{colors.RESET}")
 
 
+def print_yellow(text):
+    print(f"{colors.YELLOW}{text}{colors.RESET}")
+
+
 def print_blue(text):
     print(f"{colors.BLUE}{text}{colors.RESET}")
 
@@ -99,15 +103,13 @@ def run_gcc_command(command):
     true_cmd = command.replace(os.linesep, " ").replace(os.linesep, " ")
     for value in colors_arr:
         true_cmd = true_cmd.replace(value, "")
-    # v = run_command(true_cmd)
-    # return v
     err = subprocess.run(
         true_cmd,
         shell=True,
         capture_output=True,
         universal_newlines=True
     ).stderr
-    return err
+    return (err, command)
 
 
 def remove_trailing_backslash(input_string):

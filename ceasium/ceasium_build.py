@@ -2,7 +2,7 @@ import os
 import time
 from .ceasium_config import read_config
 from .ceasium_build_o import build_o_files
-from .ceasium_system_util import print_blue, print_green, print_red, run_command
+from .ceasium_system_util import print_blue, print_green, print_red, print_yellow, run_command
 from .ceasium_build_common import build_gcc, gen_compiler_flags, gen_linker_flags
 
 build_folder_name = "build"
@@ -43,10 +43,15 @@ def build(args):
         if build_config["type"] == "so":
             build_archive(build_path, o_files, build_config)
         if build_config["type"] == "exe":
-            print_blue(f"Built {build_config["name"]}:")
-            r = build_gcc(build_path, o_files, build_config)
+            path = os.path.join(build_path, build_config["name"])
+            (r, t, cmd) = build_gcc(build_path, o_files, build_config)
             if r:
+                print_yellow(f"Linked {path} in {round(t, 2)}s:")
+                # print(cmd)
                 print(r)
+            else:
+                print_green(f"Linked {path} in {round(t, 2)}s.")
+                # print(cmd)
         if build_config["type"] == "dll":
             build_dll(build_path, o_files, build_config)
         print_green(f"Build succeeded in {round(time.time() - start, 2)}s.")

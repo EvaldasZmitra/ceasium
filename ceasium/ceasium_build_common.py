@@ -1,7 +1,8 @@
 import os
+import time
 import pkgconfig
 
-from ceasium.ceasium_system_util import colors, print_blue, run_gcc_command
+from ceasium.ceasium_system_util import colors, run_gcc_command
 
 
 def gen_linker_flags(build_config):
@@ -47,28 +48,7 @@ def gen_pkg_config_cc_flags(libraries):
 
 
 def build_gcc(build_path, o_files, build_config):
-    # result_path = os.path.join(build_path, build_config["name"] + ".exe")
-    # cc = build_config["compiler"]
-    # cc_flags = f"{os.linesep}".join(gen_compiler_flags(build_config))
-    # o_files = f"{os.linesep}".join(o_files)
-    # linker_flags = f"{os.linesep}".join(gen_linker_flags(build_config))
-    # sum = [
-    #     cc, os.linesep,
-    #     colors.YELLOW,
-    #     cc_flags, os.linesep,
-    #     colors.RESET,
-    #     colors.DARK_GREY,
-    #     o_files, os.linesep,
-    #     colors.RESET,
-    #     colors.CYAN,
-    #     linker_flags, os.linesep,
-    #     colors.RESET,
-    #     "-o ", result_path, os.linesep,
-    # ]
-    # command = "".join(sum)
-    # print_blue(f"{os.linesep}Building executable...")
-    # run_gcc_command(command)
-    build_gcc_total(
+    return build_gcc_total(
         gen_compiler_flags(build_config),
         gen_linker_flags(build_config),
         o_files,
@@ -84,17 +64,20 @@ def join_gcc(s, e, c):
 
 
 def build_gcc_total(compiler_flags, linker_flags, o_files, cc, result_path):
+    start = time.time()
     cc_flags = f"{os.linesep}".join(compiler_flags)
     o_files = f"{os.linesep}".join(o_files)
     linker_flags = f"{os.linesep}".join(linker_flags)
     sum = [cc, os.linesep]
-    sum = join_gcc(sum, cc_flags, colors.YELLOW)
+    sum = join_gcc(sum, cc_flags, colors.CYAN)
     sum = join_gcc(sum, o_files, colors.DARK_GREY)
-    sum = join_gcc(sum, linker_flags, colors.CYAN)
+    sum = join_gcc(sum, linker_flags, colors.MAGENTA)
     sum += ["-o ", result_path, os.linesep]
     r_dir = os.path.dirname(result_path)
     if not os.path.exists(r_dir):
         os.makedirs(r_dir)
     command = "".join(sum)
     command = command.replace(os.linesep, ' ')
-    return run_gcc_command(command)
+    (r, cmd) = run_gcc_command(command)
+    t = time.time() - start
+    return (r, t, cmd)
