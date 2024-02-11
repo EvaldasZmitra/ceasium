@@ -4,7 +4,7 @@ import subprocess
 import pkgconfig
 from multiprocessing import Pool
 
-from .ceasium_system_util import find_files, print_blue, remove_trailing_backslash
+from .ceasium_system_util import find_files, print_blue, print_green, print_red, print_yellow, remove_trailing_backslash
 from .ceasium_build_common import build_gcc_total, gen_compiler_flags
 
 build_folder_name = "build"
@@ -48,12 +48,19 @@ def build_o_files(path, build_config, folder_name):
         for future in as_completed(future_to_input):
             input_param = future_to_input[future]
             try:
-                result = future.result()
-                print_blue(f"Built {input_param[4]}:")
+                (result, time, cmd) = future.result()
                 if result:
+                    t = f"Built {input_param[4]} in {round(time, 2)}s:"
+                    print_yellow(t)
+                    # print(cmd)
                     print(result)
+                else:
+                    t = f"Built {input_param[4]} in {round(time, 2)}s."
+                    print_green(t)
+                    # print(cmd)
             except Exception as e:
-                print_blue(f"Built {input_param[4]}:")
+                print_red(f"Built {input_param[4]} in {round(time, 2)}s:")
+                # print(cmd)
                 if e:
                     print(e)
 
