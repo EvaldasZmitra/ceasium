@@ -82,6 +82,7 @@ def get_src_o_path_pairs(path, src_files, folder_name):
 def gen_build_o_file_cmd(path, src_path, o_path, build_config):
     cc = build_config['compiler']
     cc_flags = gen_compiler_flags(build_config)
+    cc_flags = " ".join(cc_flags)
     includes = create_include_string(path, build_config["libraries"])
     return f"{cc} {cc_flags} {includes} -c {src_path} -o {o_path}"
 
