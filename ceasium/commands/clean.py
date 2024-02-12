@@ -1,8 +1,6 @@
 import os
 import shutil
-
-
-build_folder_name = "build"
+from ..constants import build_folder_name
 
 
 def clean(args):

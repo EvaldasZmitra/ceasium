@@ -2,9 +2,7 @@ import os
 import argparse
 import json
 import os
-
-
-project_build_file_name = "build.json"
+from .constants import help_template, project_build_file_name
 
 
 def configure_arg_parser():
@@ -18,11 +16,7 @@ def configure_arg_parser():
     install_parser = subparsers.add_parser('install', help='Installs packages')
     install_parser.add_argument(
         'package_manager',
-        help="""
-        Package environment defaults to os name [Windows, Linux, Darwin].
-        A value can be passed to use different install commands defined in
-        build.json. For example - define new env Snap, pass in value Snap and it
-        will use snap commands from build.json to install packages."""
+        help=help_template
     )
     install_parser.add_argument("--path", default=os.getcwd())
     build_parser = subparsers.add_parser("build")
