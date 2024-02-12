@@ -1,5 +1,5 @@
-from .ceasium_config import read_config
-from .ceasium_system_util import run_command
+from ..config import read_config
+from ..system_util import run_command
 
 
 def install(args):

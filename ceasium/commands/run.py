@@ -1,11 +1,8 @@
 import os
-
-
-from .ceasium_system_util import print_blue, run_command, colors
-from .ceasium_build_o import build_o_files
-from .ceasium_config import read_config
-
-build_folder_name = "build"
+from ..shell import print_blue
+from ..system_util import run_command
+from ..config import read_config
+from ..constants import build_folder_name
 
 
 def run(args):
