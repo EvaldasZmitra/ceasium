@@ -37,17 +37,18 @@ def remove_trailing_backslash(input_string):
 
 
 def get_output(command):
-    return subprocess.check_output(
-        command,
-        stderr=subprocess.STDOUT,
-        text=True
-    )
+    return subprocess.run(
+        " ".join(command),
+        shell=True,
+        capture_output=True,
+        universal_newlines=True
+    ).stdout
 
 
 def run_timed(command):
     start = time.time()
     o = subprocess.run(
-        command,
+        " ".join(command),
         shell=True,
         capture_output=True,
         universal_newlines=True

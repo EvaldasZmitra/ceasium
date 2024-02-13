@@ -12,7 +12,7 @@ def compile(root_path, libraries, cc_flags, cc):
     cc_flags = [
         *gen_pkg_config_cc_flags(libraries),
         *cc_flags,
-        f"-I{os.path.join(root_path, "include")}"
+        f"-I{os.path.join(root_path, 'include')}"
     ]
     c_file_paths = [
         join(root, file)
