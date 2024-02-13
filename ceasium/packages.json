@@ -1,0 +1,410 @@
+{
+    "allegro": {
+        "apt": "liballegro5-dev"
+    },
+    "ao": {
+        "apt": "libao-dev"
+    },
+    "assetkit": {
+        "apt": "libassetkit-dev"
+    },
+    "astera": {
+        "apt": "libastera-dev"
+    },
+    "blosc": {
+        "apt": "libblosc-dev"
+    },
+    "brotli": {
+        "apt": "libbrotli-dev"
+    },
+    "cairo": {
+        "apt": "libcairo2-dev"
+    },
+    "cchan": {
+        "apt": "libcchan-dev"
+    },
+    "cglm": {
+        "apt": "libcglm-dev"
+    },
+    "checkedthreads": {
+        "apt": "libcheckedthreads-dev"
+    },
+    "chipmunk": {
+        "apt": "libchipmunk-dev"
+    },
+    "ck": {
+        "apt": "libc-klib-dev"
+    },
+    "clhash": {
+        "apt": "libclhash-dev"
+    },
+    "clist": {
+        "apt": "libclist-dev"
+    },
+    "clzip": {
+        "apt": "libclzip-dev"
+    },
+    "cmt": {
+        "apt": "libcmt-dev"
+    },
+    "collections": {
+        "apt": "libcollections-dev"
+    },
+    "corange": {
+        "apt": "libcorange-dev"
+    },
+    "csfml": {
+        "apt": "libcsfml-dev"
+    },
+    "darkplaces": {
+        "apt": "darkplaces-server"
+    },
+    "density": {
+        "apt": "libdensity-dev"
+    },
+    "ejdb2": {
+        "apt": "libejdb2-dev"
+    },
+    "epoxy": {
+        "apt": "libepoxy-dev"
+    },
+    "exengine": {
+        "apt": "libexengine-dev"
+    },
+    "fcfs": {
+        "apt": "libfcfs-dev"
+    },
+    "finitestateentropy": {
+        "apt": "libfinitestateentropy-dev"
+    },
+    "flecs": {
+        "apt": "libflecs-dev"
+    },
+    "freecell-solver": {
+        "apt": "libfreecell-solver-dev"
+    },
+    "freeglut": {
+        "apt": "freeglut3-dev"
+    },
+    "gd-2.0": {
+        "apt": "libgd-dev"
+    },
+    "gl": {
+        "apt": "libgl1-mesa-dev"
+    },
+    "glfw3": {
+        "apt": "libglfw3-dev"
+    },
+    "glib-2.0": {
+        "apt": "libc6-dev"
+    },
+    "graphene": {
+        "apt": "libgraphene1-dev"
+    },
+    "groonga": {
+        "apt": "libgroonga-dev"
+    },
+    "gtk+-3.0": {
+        "apt": "libgtk-3-dev"
+    },
+    "heatshrink": {
+        "apt": "libheatshrink-dev"
+    },
+    "heman": {
+        "apt": "libheman-dev"
+    },
+    "highwayhash": {
+        "apt": "libhighwayhash-dev"
+    },
+    "hiredis": {
+        "apt": "libhiredis-dev"
+    },
+    "huffandpuff": {
+        "apt": "libhuffandpuff-dev"
+    },
+    "igraph": {
+        "apt": "libigraph0-dev"
+    },
+    "ioquake3": {
+        "apt": "ioquake3"
+    },
+    "iup": {
+        "apt": "libiup-dev"
+    },
+    "kazmath": {
+        "apt": "libkazmath-dev"
+    },
+    "libaco": {
+        "apt": "libaco-dev"
+    },
+    "libarchive": {
+        "apt": "libarchive-dev"
+    },
+    "libavl": {
+        "apt": "libavl-dev"
+    },
+    "libbz2": {
+        "apt": "libbz2-dev"
+    },
+    "libc-dada2": {
+        "apt": "libc-dada2-dev"
+    },
+    "libcaca": {
+        "apt": "libcaca-dev"
+    },
+    "libconcurrent": {
+        "apt": "libconcurrent-dev"
+    },
+    "libcsp": {
+        "apt": "libcsp-dev"
+    },
+    "libdb": {
+        "apt": "libdb-dev"
+    },
+    "libdill": {
+        "apt": "libdill-dev"
+    },
+    "libds": {
+        "apt": "libds-dev"
+    },
+    "libfastlz": {
+        "apt": "libfastlz-dev"
+    },
+    "libgif": {
+        "apt": "libgif-dev"
+    },
+    "libhl": {
+        "apt": "libhl-dev"
+    },
+    "libimagequant": {
+        "apt": "libimagequant-dev"
+    },
+    "libjpeg": {
+        "apt": "libjpeg-dev"
+    },
+    "libkdtree": {
+        "apt": "libkdtree++-dev"
+    },
+    "liblfds": {
+        "apt": "liblfds-dev"
+    },
+    "liblist": {
+        "apt": "liblist-dev"
+    },
+    "liblmdb": {
+        "apt": "liblmdb-dev"
+    },
+    "liblz4": {
+        "apt": "liblz4-dev"
+    },
+    "libmill": {
+        "apt": "libmill-dev"
+    },
+    "libmongoc-1.0": {
+        "apt": "libmongoc-dev"
+    },
+    "libomp": {
+        "apt": "libomp-dev"
+    },
+    "libopenmpi": {
+        "apt": "libopenmpi-dev"
+    },
+    "libpng": {
+        "apt": "libpng-dev"
+    },
+    "libpq": {
+        "apt": "libpq-dev"
+    },
+    "librg": {
+        "apt": "librg-dev"
+    },
+    "librsvg-2.0": {
+        "apt": "librsvg2-dev"
+    },
+    "libsixel": {
+        "apt": "libsixel-dev"
+    },
+    "libspng": {
+        "apt": "libspng-dev"
+    },
+    "libsrt": {
+        "apt": "libsrt-dev"
+    },
+    "liburcu": {
+        "apt": "liburcu-dev"
+    },
+    "libvector": {
+        "apt": "libvector-dev"
+    },
+    "libxmi": {
+        "apt": "libxmi-dev"
+    },
+    "libzip": {
+        "apt": "libzip-dev"
+    },
+    "libzstd": {
+        "apt": "libzstd-dev"
+    },
+    "lightmapper": {
+        "apt": "liblightmapper-dev"
+    },
+    "little": {
+        "apt": "liblittle-dev"
+    },
+    "lizard": {
+        "apt": "liblizard-dev"
+    },
+    "luigi": {
+        "apt": "python3-luigi"
+    },
+    "lvgl": {
+        "apt": "liblvgl-dev"
+    },
+    "lzo2": {
+        "apt": "liblzo2-dev"
+    },
+    "mathc": {
+        "apt": "libmathc-dev"
+    },
+    "microui": {
+        "apt": "libmicroui-dev"
+    },
+    "mozjs-78": {
+        "apt": "libmozjs-78-dev (Note: Check compatibility)"
+    },
+    "mysqlclient": {
+        "apt": "libmysqlclient-dev"
+    },
+    "nanovg": {
+        "apt": "libnanovg-dev"
+    },
+    "nuklear": {
+        "apt": "libnuklear-dev"
+    },
+    "oclkit": {
+        "apt": "liboclkit-dev"
+    },
+    "offbrand": {
+        "apt": "liboffbrand-dev"
+    },
+    "opencl": {
+        "apt": "ocl-icd-opencl-dev"
+    },
+    "orx-2.0": {
+        "apt": "liborx-dev"
+    },
+    "packedarray": {
+        "apt": "libpackedarray-dev"
+    },
+    "pal": {
+        "apt": "libpal-dev"
+    },
+    "pixz": {
+        "apt": "libpixz-dev"
+    },
+    "plutovg": {
+        "apt": "libplutovg-dev"
+    },
+    "pth": {
+        "apt": "libpth-dev"
+    },
+    "pthread": {
+        "apt": "libc6-dev"
+    },
+    "quake": {
+        "apt": "quake"
+    },
+    "raylib": {
+        "apt": "libraylib-dev"
+    },
+    "rb3ptr": {
+        "apt": "librb3ptr-dev"
+    },
+    "retroarch": {
+        "apt": "retroarch"
+    },
+    "roaring": {
+        "apt": "libroaring-dev"
+    },
+    "sail": {
+        "apt": "libsail-dev"
+    },
+    "sdl": {
+        "apt": "libsdl1.2-dev"
+    },
+    "sdl2": {
+        "apt": "libsdl2-dev"
+    },
+    "shoco": {
+        "apt": "libshoco-dev"
+    },
+    "sigil": {
+        "apt": "libsigil-dev"
+    },
+    "simdcomp": {
+        "apt": "libsimdcomp-dev"
+    },
+    "smaz": {
+        "apt": "libsmaz-dev"
+    },
+    "sophia": {
+        "apt": "libsophia-dev"
+    },
+    "sparkey": {
+        "apt": "libsparkey-dev"
+    },
+    "spookyhash": {
+        "apt": "libspookyhash-dev"
+    },
+    "sqlite3": {
+        "apt": "libsqlite3-dev"
+    },
+    "squash": {
+        "apt": "libsquash-dev"
+    },
+    "t1ha": {
+        "apt": "libt1ha-dev"
+    },
+    "tinycthread": {
+        "apt": "libtinycthread-dev"
+    },
+    "tinyfiledialogs": {
+        "apt": "libtinyfiledialogs-dev"
+    },
+    "tk": {
+        "apt": "tk-dev"
+    },
+    "turbopfor": {
+        "apt": "libturbopfor-dev"
+    },
+    "turborle": {
+        "apt": "libturborle-dev"
+    },
+    "uastar": {
+        "apt": "libuastar-dev"
+    },
+    "unqlite": {
+        "apt": "libunqlite-dev"
+    },
+    "uthash": {
+        "apt": "libuthash-dev"
+    },
+    "vips": {
+        "apt": "libvips-dev"
+    },
+    "whitedb": {
+        "apt": "libwhitedb-dev"
+    },
+    "xforms": {
+        "apt": "libxforms-dev"
+    },
+    "xxhash": {
+        "apt": "libxxhash-dev"
+    },
+    "yamagi-quake2": {
+        "apt": "yamagi-quake2"
+    },
+    "zlib": {
+        "apt": "zlib1g-dev"
+    }
+}
