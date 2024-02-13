@@ -15,6 +15,7 @@ def execute(cmd):
 
 
 def run_command(command):
+    print(command)
     result = ""
     for l in execute(command):
         try:
