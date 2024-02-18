@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ceasium"
-version = "0.14.7"
+version = "0.15.0"
 description = "A hassle free C (gcc) JSON build system."
 readme = "README.md"
 authors = ["Evaldas Zmitra <evaldaszmit@gmail.com>"]
@@ -15,4 +15,10 @@ python = "^3.6"
 pkgconfig = "^1.5.5"
 
 [tool.poetry.scripts]
-ceasium = "ceasium.main:main"
+cs-c-flags = "ceasium.cs_c_flags:main"
+cs-changed = "ceasium.cs_changed:main"
+cs-change-dir = "ceasium.cs_change_dir:main"
+cs-compile = "ceasium.cs_compile:main"
+cs-ld-flags = "ceasium.cs_ld_flags:main"
+cs-rm = "ceasium.cs_rm:main"
+cs = "ceasium.cs:main"

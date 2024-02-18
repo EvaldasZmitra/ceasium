@@ -60,23 +60,29 @@ Example config:
 
 ```json
 {
-  "name": "myapp",
-  "type": "exe",
-  "compiler": "gcc",
-  "libraries": ["glew", "SDL2"],
-  "flags": {
-    "compiler": ["-g"],
-    "linker": ["-lopengl"]
+  "name": "",
+  "vars": {
+    "src": "cs-changed './src'",
+    "test": "cs-changed './test'",
+    "all": "$src $test",
+    "obj-src": "change-dir $src './obj'",
+    "obj-test": "change-dir $test './obj'",
+    "obj-test-all": "$obj-test $(cs-rm $obj-src \"main.o\")",
+    "c-flags": "$(cs-c-flags $libs) -I./include -g -W -Wall -O0 -fopenmp -fdiagnostics-color=always",
+    "ld-flags": "cs-ld-flags $libs"
   },
-  "packages": {
-    "pacman": [
-      "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-glew",
-      "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-SDL2"
-    ],
-    "apt": [
-      "sudo apt-get install -y libglew-dev",
-      "sudo apt-get install -y libglfw3"
-    ]
+  "scripts": {
+    "compile": "cs-compile $cc $all $c-flags",
+    "link-src": "$cc $c-flags $obj-src -o $build-dir/$name $ld-flags",
+    "link-test": "$cc $c-flags $obj-test-all -o $build-dir/${name}-test $ld-flags",
+    "run": "./build/$name",
+    "test": "./build/${name}-test"
+  },
+  "libs": {
+    "glew": {},
+    "assimp": {},
+    "sdl2": {},
+    "glib2": {}
   }
 }
 ```
