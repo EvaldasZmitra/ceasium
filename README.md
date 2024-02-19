@@ -81,6 +81,65 @@ Example config:
 }
 ```
 
+```json
+{
+  "libs": {
+    "glib": {
+      "name": "glib-2.0",
+      "version": ">=2.28"
+    }
+  },
+  "compile": {
+    "main": {
+      "cc": "gcc",
+      "cflags": [],
+      "libs": ["glib"],
+      "directory": "./src"
+    },
+    "test": {
+      "cc": "gcc",
+      "cflags": [],
+      "libs": ["glib"],
+      "directory": "./test"
+    }
+  },
+  "link": {
+    "main": {
+      "cc": "gcc",
+      "cflags": [],
+      "ldflags": [],
+      "libs": [],
+      "directories": ["./build/main"]
+    },
+    "test": {
+      "cc": "gcc",
+      "cflags": [],
+      "ldflags": [],
+      "libs": [],
+      "directories": ["./build/main", "./build/test"],
+      "exclude": ["./build/main/main.o"]
+    }
+  },
+  "archive": {
+    "main": {
+      "directory": "./build/main"
+    }
+  },
+  "output": {
+    "main": {
+      "compile": "main",
+      "link": "main",
+      "run": "./build/main"
+    },
+    "test": {
+      "compile": "test",
+      "link": "test",
+      "run": "./build/test"
+    }
+  }
+}
+```
+
 - `name`: Name of the exe or library that will be built.
 - `type`: ["so", "dll", "exe"] what will be built.
 - `compiler`: ["gcc", "clang" ...other].

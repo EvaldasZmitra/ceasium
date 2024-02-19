@@ -1,0 +1,41 @@
+{
+  "name": "app",
+  "libs": {
+    "glib": {
+      "name": "glib-2.0",
+      "version": "2.28"
+    }
+  },
+  "objs": {
+    "src": {
+      "cc": "gcc",
+      "cflags": ["-I./include"],
+      "libs": ["glib"]
+    }
+  },
+  "outs": {
+    "exe": {
+      "src": {
+        "cc": "gcc",
+        "ldflags": [],
+        "objs": ["src"],
+        "exclude": []
+      }
+    },
+    "dyn": {
+      "src": {
+        "cc": "gcc",
+        "ldflags": [],
+        "objs": ["src"],
+        "exclude": []
+      }
+    },
+    "static": {
+      "src": {
+        "type": "static",
+        "objs": ["src"],
+        "exclude": []
+      }
+    }
+  }
+}
