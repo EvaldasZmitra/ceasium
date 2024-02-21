@@ -2,9 +2,12 @@ from multiprocessing import Pool
 from json import loads
 from subprocess import run
 from os.path import abspath, basename, join, exists, getmtime, splitext
-from os import walk, makedirs
+from os import walk, makedirs, getcwd
+import os
 from argparse import ArgumentParser
 from shutil import rmtree
+from .constants import include_template, build_config_template, main_template, test_template, git_ignore_template, help_template, packages
+import platform
 
 
 class ValidationException(Exception):
@@ -21,18 +24,15 @@ class PathValidationException(ValidationException):
 def main():
     args = parse_args()
     if args.command == "build":
-        build(args.build_type, args.build_key)
+        build()
     if args.command == "run":
-        build_json = read_json_file("./build.json")
-        cs_run(join(".", "build", build_json["name"]))
-    if args.command == "init":
-        pass
-    if args.command == "install":
-        pass
+        print(cs_run([join(".", "build", basename(getcwd()))]))
+    # if args.command == "install":
+    #     install(build_json, args.package_manager)
     if args.command == "clean":
         rmtree(join(".", "build"))
-    if args.command == "add":
-        pass
+    if args.command == "init":
+        init()
 
 
 if __name__ == "__main__":
@@ -42,175 +42,212 @@ if __name__ == "__main__":
         print(e)
 
 
-def build(build_type, build_key):
+def init():
+    ensure_dir_exists(join(".", "include"))
+    ensure_dir_exists(join(".", "src"))
+    ensure_dir_exists(join(".", "test"))
+    with open(join(".", "build.json"), "w") as f:
+        f.write(build_config_template)
+    with open(join(".", "src", "main.c"), "w") as f:
+        f.write(main_template)
+    with open(join(".", "test", "main.c"), "w") as f:
+        f.write(test_template)
+    with open(join(".", ".gitignore"), "w") as f:
+        f.write(git_ignore_template)
+    with open(join(".", "include", "main.h"), "w") as f:
+        f.write(include_template)
+
+
+def install(build_json, package_manager):
+    return [
+        cs_run(packages[lib][package_manager])
+        for lib in build_json.get("libs", [])
+    ]
+
+
+def build():
     build_json = read_json_file("./build.json")
-    validate(build_json)
-    compile(build_type, build_key, build_json)
-    if build_type == "exe" or build_type == "dynamic-lib":
-        link(build_type, build_key, build_json)
-    if build_type == "static-lib":
-        create_static_lib()
+    for dir in build_json.get("lib-dirs", []):
+        os.environ["PKG_CONFIG_PATH"] = f"{os.environ.get('PKG_CONFIG_PATH')};{abspath(dir)}"
+    compile(build_json)
+    if build_json["type"] == "exe":
+        link(build_json)
+
+    if build_json["type"] == "dynamic-lib":
+        link(build_json)
+
+    if build_json["type"] == "static-lib":
+        create_static_lib(build_json)
 
 
-def link_dll(build_type, build_key, build_json):
+def link(build_json):
+    ldflags = get_ldflags(build_json)
+    name = basename(getcwd())
+    extension = ""
+    prefix = ""
+    if build_json["type"] == "dynamic-lib":
+        create_pkg_conf(
+            [
+                *ldflags,
+                f"-l{name}",
+                f"-L{join(getcwd(), 'build')}"
+            ],
+            [f"-I{join(getcwd(), 'include')}"],
+            build_json
+        )
+        if platform.system() == "Linux":
+            extension = ".so"
+        if platform.system() == "Darwin":
+            extension = ".dylib"
+        if platform.system() == "Windows":
+            extension = ".dll"
+        prefix = "lib"
+    else:
+        extension = ".exe"
     return cs_run(
         [
-            build_json["outs"][build_type][build_key]['cc'],
-            "-static",
-            *get_o_files(build_type, build_key, build_json),
+            build_json['cc'],
+            "-shared" if build_json["type"] == "dynamic-lib" else "",
+            *get_o_files_existing(),
             "-o",
-            join(".", "build", build_json["name"]),
-            *get_ldflags(build_json, build_type, build_key)
+            join(".", "build", f"{prefix}{name}{extension}"),
+            *ldflags
         ]
     )
 
 
-def create_static_lib(build_type, build_key, build_json):
+def create_static_lib(build_json):
+    ldflags = get_ldflags(build_json)
+    name = basename(getcwd())
+    create_pkg_conf(
+        ldflags,
+        [f"-I{join(getcwd(), 'include')}"],
+        build_json
+    )
+    if platform.system() == "Linux":
+        extension = ".a"
+    if platform.system() == "Darwin":
+        extension = ".a"
+    if platform.system() == "Windows":
+        extension = ".lib"
     return cs_run(
-        " ".join(
-            [
-                "ar",
-                "rcs",
-                build_json["name"],
-                *get_o_files(build_type, build_key, build_json)
-            ]
-        )
+        [
+            "ar",
+            "rcs",
+            join(".", "build", f"lib{name}{extension}"),
+            *get_o_files_existing()
+        ]
     )
 
 
-def link(build_type, build_key, build_json):
-    return cs_run(
-        " ".join(
-            [
-                build_json["outs"][build_type][build_key]['cc'],
-                "-shared" if build_type == "dynamic-lib" else "",
-                *get_o_files(build_type, build_key, build_json),
-                "-o",
-                join(".", "build", build_json["name"]),
-                *get_ldflags(build_json, build_type, build_key)
-            ]
-        )
-    )
+def create_pkg_conf(ldflags, cflags, build_json):
+    cwd = getcwd()
+    name = basename(cwd)
+    with open(join(".", "build", f"{name}.pc"), "w") as f:
+        f.write(f"""
+Name: lib{name}
+Description: {name} library
+Version: {build_json['version']}
+Libs: {" ".join(ldflags)}
+Cflags: {" ".join(cflags)}
+""".replace('\\', '/'))
 
 
-def get_ldflags(build_json, build_type, build_key):
-    return [
-        *build_json["outs"][build_type][build_key]["ldflags"],
-        *get_pkg_config_flags(
-            get_libs(build_type, build_key, build_json),
-            "libs"
-        )
-    ]
-
-
-def get_libs(build_type, build_key, build_json):
-    return [
-        {
-            "name": build_json["libs"][lib]["name"],
-            "version": build_json["libs"][lib]["version"]
-        }
-        for obj in build_json["outs"][build_type][build_key]["objs"]
-        for lib in build_json["objs"][obj]["libs"]
-    ]
-
-
-def get_o_files(build_type, build_key, build_json):
+def get_o_files_existing():
     return [
         file
-        for obj in build_json["outs"][build_type][build_key]["objs"]
-        for file in get_files_in_dir(join(".", "build", obj), "o")
+        for file in get_files_in_dir(join(".", "build",))
+        if file.endswith(".o")
     ]
 
 
-def compile(build_type, build_key, build_json):
-    create_build_dirs(build_type, build_key, build_json)
+def compile(build_json):
+    ensure_dir_exists(join(".", "build"))
     with Pool() as pool:
         return pool.starmap(
-            compile_file,
-            get_compile_args(build_type, build_key, build_json)
+            compile_file_if_modified,
+            get_compile_args(build_json)
         )
 
 
-def get_compile_args(build_type, build_key, build_json):
+def get_ldflags(build_json):
     return [
-        (
-            build_json["objs"][obj_key]["cc"],
-            get_cflags(build_json, obj_key),
-            get_o_files(c_file_path, obj_key),
-            c_file_path
-        )
-        for obj_key in build_json["outs"][build_type][build_key]["objs"]
-        for c_file_path in get_files_in_dir(join(".", obj_key), ".c")
+        *build_json.get("ldflags", []),
+        *get_pkg_config_flags(build_json.get('libs', []), "libs")
     ]
 
 
-def create_build_dirs(build_type, build_key, build_json):
-    for obj_key in build_json["outs"][build_type][build_key]["objs"]:
-        o_dir = join(".", "build", obj_key)
-        if not exists(o_dir):
-            makedirs(o_dir)
-
-
-def get_o_files(c_file_path, obj_key):
-    return replace_ext(
-        replace_path(
-            c_file_path,
-            join("build", obj_key)
-        ),
-        "o"
-    )
-
-
-def get_cflags(build_json, obj_key):
+def get_c_flags(build_json):
     return [
-        *build_json["objs"][obj_key]["cflags"],
-        *get_pkg_config_flags(
-            [
-                build_json["libs"][lib]
-                for lib in build_json["objs"][obj_key]['libs']
-            ],
-            "cflags"
-        )
+        *build_json.get("cflags", []),
+        *get_pkg_config_flags(build_json.get('libs', []), "cflags")
     ]
-
-
-def was_modified(cc, c_flags, o_file_path, c_file_path):
-    return max([
-        getmtime(c_file_path),
-        *[getmtime(key) for key in get_includes(c_file_path, c_flags, cc)]
-    ]) > getmtime(o_file_path)
-
-
-def compile_file(cc, c_flags, o_file_path, c_file_path):
-    if not exists(o_file_path) or was_modified(cc, c_flags, o_file_path, c_file_path):
-        return cs_run(
-            " ".join([cc, *c_flags, "-c", c_file_path, "-o", o_file_path])
-        )
 
 
 def get_pkg_config_flags(libs, mode):
     return [
         flag
         for lib in libs
-        for flag in cs_run(
-            f"pkg-config --{mode} \"{lib['name']} >= {lib['version']}\""
-        ).strip().split(" ")
+        for flag in cs_run([f"pkg-config --{mode} {lib}"]).strip().split(" ")
     ]
 
 
-def get_files_in_dir(dir, ext):
+def get_o_file_from_c_file(c_file_path):
+    return replace_ext(
+        replace_path(
+            c_file_path,
+            join("build")
+        ),
+        "o"
+    )
+
+
+def get_compile_args(build_json):
+    return [
+        (
+            build_json["cc"],
+            get_c_flags(build_json),
+            c_file_path,
+            get_o_file_from_c_file(c_file_path)
+        )
+        for c_file_path in get_files_in_dir(join(".", "src"))
+        if c_file_path.endswith(".c")
+    ]
+
+
+def ensure_dir_exists(dir):
+    if not exists(dir):
+        makedirs(dir)
+
+
+def was_c_file_modified(cc, c_flags, c_file_path, o_file_path):
+    return max([
+        getmtime(c_file_path),
+        *[getmtime(key) for key in get_includes(cc, c_flags, c_file_path)]
+    ]) > getmtime(o_file_path)
+
+
+def compile_file_if_modified(cc, c_flags, c_file_path, o_file_path):
+    if not exists(o_file_path) or was_c_file_modified(cc, c_flags, c_file_path, o_file_path):
+        compile_file(cc, c_flags, c_file_path, o_file_path)
+
+
+def compile_file(cc, c_flags, c_file_path, o_file_path):
+    return cs_run([cc, *c_flags, "-c", c_file_path, "-o", o_file_path])
+
+
+def get_files_in_dir(dir):
     return [
         join(root, file_path)
         for root, _, file_paths in walk(dir)
         for file_path in file_paths
-        if file_path.endswith(ext)
     ]
 
 
-def get_includes(src_path, c_flags, cc):
+def get_includes(cc, c_flags, c_file_path):
     return set([
         abspath(include.lstrip('.').strip())
-        for include in cs_run([cc, *c_flags, "-M", "-H", src_path]).split('\n')
+        for include in cs_run([cc, *c_flags, "-M", "-H", c_file_path]).split('\n')
         if include.startswith(".")
     ])
 
@@ -225,7 +262,7 @@ def replace_ext(path, replace):
 
 
 def cs_run(cmd):
-    out = run(cmd, capture_output=True, text=True)
+    out = run(" ".join(cmd), capture_output=True, text=True)
     if out.returncode != 0:
         raise Exception(out.stderr)
     else:
@@ -243,115 +280,54 @@ def parse_args():
         dest="command",
         help="Pick a command to run."
     )
-    build_parser = subparsers.add_parser("build")
-    build_parser.add_argument(
-        "build_type",
-        choices=["exe", "dyn", "static"],
-        help="Build type."
-    )
-    build_parser.add_argument(
-        "build_key",
-        help="Build key."
-    )
+    subparsers.add_parser("build")
     subparsers.add_parser("run")
+    subparsers.add_parser("clean")
+    subparsers.add_parser("init")
+    install_parser = subparsers.add_parser("install")
+    install_parser.add_argument("package_manager")
     args = parser.parse_args()
     return args
 
 
 def make_path(path):
-    path = [str(p) for p in path]
-    return ":".join(["root", *path])
+    return ":".join(["root", *[str(p) for p in path]])
 
 
 def validate(build_json):
     validate_dict(
         build_json,
         [],
-        ["name", "libs", "objs", "outs"],
-        ["name", "outs"],
-        lambda x, path: True
-    )
-    validate_type(build_json["name"], ["name"], str)
-    libs = build_json.get("libs", {})
-    for lib in libs:
-        validate_dict(
-            libs[lib],
-            ["libs", lib],
-            ["name", "version"],
-            ["name", "version"],
-            lambda x, path: validate_type(x, path, str)
-        )
-    for obj in build_json.get("objs", {}):
-        validate_dict(
-            build_json["objs"][obj],
-            ["objs", obj],
-            ["cc", "cflags", "libs"],
-            ["cc"],
-            lambda x, path: validate_obj(x, path, build_json)
-        )
-
-
-def validate_libs(value, path):
-    validate_dict(
-        value,
-        path,
-        ["name", "version"],
-        ["name", "version"],
-        lambda x, p: validate_type(x, p, str)
+        ["cc", "type", "cflags", "ldflags", "lib-dirs", "libs", "version"],
+        ["cc", "type", "version"],
+        lambda x, path: validate_build_json(x, path, build_json)
     )
 
 
-def validate_compile_link_all(json, path):
-    obj = access(json, path)
-    validate_type(obj, path, dict)
-    for key in obj:
-        validate_dict(
-            obj[key],
-            path + [key],
-            ["cflags", "dirs", "ldflags", "libs", "cc"],
-            ["dirs"],
-            lambda value, path: validate_obj(value, path, json)
-        )
-
-
-def validate_obj(value, path, json):
-    if path[-1] in ["libs", "dirs"]:
-        validate_list(value, path, lambda x, path: validate_type(x, path, str))
-    if path[-1] in ["cflags", "ldflags"]:
-        validate_list_of_flags(value, path)
-    if path[-1] == "libs":
-        libs = access(json, ["libs"])
-        validate_dict(
-            libs,
-            ["libs"],
-            libs.keys(),
-            value,
-            lambda a, b: True
-        )
+def validate_build_json(value, path, json):
     if path[-1] == "cc":
-        validate_type(access(json, path), path, str)
-
-
-def validate_build(value, path, json):
-    if len(path) == 3:
+        validate_type(value, path, str)
+    if path[-1] == "type":
+        validate_type(value, path, str)
+        valid_libs = ["exe", "dynamic-lib", "static-lib"]
+        if type not in valid_libs:
+            raise PathValidationException(["type", f"must be in {valid_libs}"])
+    if path[-1] == "cflags":
+        validate_list_of_flags(value, path)
+    if path[-1] == "ldflags":
+        validate_list_of_flags(value, path)
+    if path[-1] == "lib-dirs":
         validate_list(
             value,
             path,
-            lambda x, path:
-                validate_type(x, path, str) and
-                access(json, [path[-1], x])
+            lambda x, path: validate_type(x, path, str)
         )
-
-
-def validate_at_least_one(json, paths):
-    for path in paths:
-        try:
-            access(json, path)
-            return
-        except PathValidationException:
-            pass
-    paths_str = [make_path(path) for path in paths]
-    raise ValidationException(f"At least one in {paths_str} must exist.")
+    if path[-1] == "libs":
+        validate_list(
+            value,
+            path,
+            lambda x, path: validate_type(x, path, str)
+        )
 
 
 def validate_list_of_flags(flags, path):
@@ -376,11 +352,6 @@ def validate_dict(obj, path, valid_keys, required_keys, validate):
         validate(obj[key], key_path)
 
 
-def validate_not_empty(elements, path):
-    if len(elements) == 0:
-        raise PathValidationException(path, "cannot be empty")
-
-
 def validate_list(elements, path, validate):
     validate_type(elements, path, list)
     for element in elements:
@@ -390,8 +361,8 @@ def validate_list(elements, path, validate):
 def validate_type(value, path, target_type):
     if type(value) != target_type:
         raise PathValidationException(
-            path, f"must be a {target_type.__name__} but is {
-                type(value).__name__}"
+            path,
+            f"must be a {target_type.__name__} but is {type(value).__name__}"
         )
 
 

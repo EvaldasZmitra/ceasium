@@ -36,31 +36,60 @@ class colors:
     DARK_GREY = colors_arr[11]
 
 
+include_template = """
+#ifndef MAIN_H
+#define MAIN_H
+
+
+
+#endif
+"""
+
 build_config_template = """
 {
-  "name": "myapp",
-  "compiler": "gcc",
-  "type": "exe",
-  "flags": {
-    "compiler": [
-      "-g", 
-      "-Wall", 
-      "-W",
-      "-O3",
-      "-fdiagnostics-color=always"
-    ],
-    "linker": []
+  "name": "app",
+  "objs": {
+    "src": {
+      "cc": "gcc",
+      "cflags": [
+        "-I./include",
+        "-g",
+        "-W",
+        "-Wall",
+        "-O3",
+        "-fdiagnostics-color=always"
+      ]
+    },
+    "test": {
+      "cc": "gcc",
+      "cflags": [
+        "-I./include",
+        "-g",
+        "-W",
+        "-Wall",
+        "-O3",
+        "-fdiagnostics-color=always"
+      ]
+    }
   },
-  "libraries": [],
-  "packages": {
-    "pacman": [],
-    "apt": []
+  "outs": {
+    "exe": {
+      "src": {
+        "cc": "gcc",
+        "objs": ["src"]
+      },
+      "test": {
+        "cc": "gcc",
+        "objs": ["src", "test"]
+      }
+    }
   }
 }
 """
 
 main_template = """
 #include <stdio.h>
+#include <main.h>
 
 int main()
 {
@@ -89,3 +118,22 @@ A value can be passed to use different install commands defined in
 build.json. For example - define new env Snap, pass in value Snap and it
 will use snap commands from build.json to install packages.
 """
+
+packages = {
+    "glew": {
+        "apt": "apt install glew",
+        "msys2": ["pacman",  "-S", "--needed", "--noconfirm", "mingw-w64-x86_64-glew"]
+    },
+    "sdl2": {
+        "apt": "apt install sdl2",
+        "msys2": ["pacman",  "-S", "--needed", "--noconfirm", "mingw-w64-x86_64-SDL2"]
+    },
+    "glib-2.0": {
+        "apt": "apt install glib",
+        "msys2": ["pacman",  "-S", "--needed", "--noconfirm", "mingw-w64-x86_64-glib2"]
+    },
+    "assimp": {
+        "apt": "apt install assimp",
+        "msys2": ["pacman",  "-S", "--needed", "--noconfirm", "mingw-w64-x86_64-assimp"]
+    }
+}
