@@ -1,9 +1,12 @@
 build_folder_name = "build"
 project_build_file_name = "build.json"
-build_folder_name = "build"
 src_folder_name = "src"
 tests_folder_name = "tests"
 o_folder_name = "o"
+cflags_name = "cflags"
+include_name = "include"
+type_name = "type"
+ldflags_name = "ldflags"
 
 colors_arr = [
     '\033[0m',

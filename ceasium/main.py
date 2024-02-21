@@ -6,7 +6,7 @@ from os import walk, makedirs, getcwd
 import os
 from argparse import ArgumentParser
 from shutil import rmtree
-from .constants import include_template, build_config_template, main_template, test_template, git_ignore_template, help_template, packages
+from .constants import ldflags_name, type_name, include_name, cflags_name, src_folder_name, build_folder_name, project_build_file_name, include_template, build_config_template, main_template, test_template, git_ignore_template, packages
 import platform
 
 
@@ -23,14 +23,14 @@ class PathValidationException(ValidationException):
 
 def main():
     args = parse_args()
-    if args.command == "build":
+    if args.command == build_folder_name:
         build()
     if args.command == "run":
-        print(cs_run([join(".", "build", basename(getcwd()))]))
+        print(cs_run([join(".", build_folder_name, basename(getcwd()))]))
     # if args.command == "install":
     #     install(build_json, args.package_manager)
     if args.command == "clean":
-        rmtree(join(".", "build"))
+        rmtree(join(".", build_folder_name))
     if args.command == "init":
         init()
 
@@ -43,18 +43,18 @@ if __name__ == "__main__":
 
 
 def init():
-    ensure_dir_exists(join(".", "include"))
-    ensure_dir_exists(join(".", "src"))
+    ensure_dir_exists(join(".", include_name))
+    ensure_dir_exists(join(".", src_folder_name))
     ensure_dir_exists(join(".", "test"))
-    with open(join(".", "build.json"), "w") as f:
+    with open(join(".", project_build_file_name), "w") as f:
         f.write(build_config_template)
-    with open(join(".", "src", "main.c"), "w") as f:
+    with open(join(".", src_folder_name, "main.c"), "w") as f:
         f.write(main_template)
     with open(join(".", "test", "main.c"), "w") as f:
         f.write(test_template)
     with open(join(".", ".gitignore"), "w") as f:
         f.write(git_ignore_template)
-    with open(join(".", "include", "main.h"), "w") as f:
+    with open(join(".", include_name, "main.h"), "w") as f:
         f.write(include_template)
 
 
@@ -66,17 +66,18 @@ def install(build_json, package_manager):
 
 
 def build():
-    build_json = read_json_file("./build.json")
+    build_json = read_json_file(project_build_file_name)
     for dir in build_json.get("lib-dirs", []):
-        os.environ["PKG_CONFIG_PATH"] = f"{os.environ.get('PKG_CONFIG_PATH')};{abspath(dir)}"
+        os.environ["PKG_CONFIG_PATH"] = f"{os.environ.get('PKG_CONFIG_PATH')};{
+            abspath(dir)}"
     compile(build_json)
-    if build_json["type"] == "exe":
+    if build_json[type_name] == "exe":
         link(build_json)
 
-    if build_json["type"] == "dynamic-lib":
+    if build_json[type_name] == "dynamic-lib":
         link(build_json)
 
-    if build_json["type"] == "static-lib":
+    if build_json[type_name] == "static-lib":
         create_static_lib(build_json)
 
 
@@ -85,7 +86,7 @@ def link(build_json):
     name = basename(getcwd())
     extension = ""
     prefix = ""
-    if build_json["type"] == "dynamic-lib":
+    if build_json[type_name] == "dynamic-lib":
         create_pkg_conf(
             [
                 *ldflags,
@@ -107,10 +108,10 @@ def link(build_json):
     return cs_run(
         [
             build_json['cc'],
-            "-shared" if build_json["type"] == "dynamic-lib" else "",
+            "-shared" if build_json[type_name] == "dynamic-lib" else "",
             *get_o_files_existing(),
             "-o",
-            join(".", "build", f"{prefix}{name}{extension}"),
+            join(".", build_folder_name, f"{prefix}{name}{extension}"),
             *ldflags
         ]
     )
@@ -134,7 +135,7 @@ def create_static_lib(build_json):
         [
             "ar",
             "rcs",
-            join(".", "build", f"lib{name}{extension}"),
+            join(".", build_folder_name, f"lib{name}{extension}"),
             *get_o_files_existing()
         ]
     )
@@ -143,7 +144,7 @@ def create_static_lib(build_json):
 def create_pkg_conf(ldflags, cflags, build_json):
     cwd = getcwd()
     name = basename(cwd)
-    with open(join(".", "build", f"{name}.pc"), "w") as f:
+    with open(join(".", build_folder_name, f"{name}.pc"), "w") as f:
         f.write(f"""
 Name: lib{name}
 Description: {name} library
@@ -156,13 +157,13 @@ Cflags: {" ".join(cflags)}
 def get_o_files_existing():
     return [
         file
-        for file in get_files_in_dir(join(".", "build",))
+        for file in get_files_in_dir(join(".", build_folder_name,))
         if file.endswith(".o")
     ]
 
 
 def compile(build_json):
-    ensure_dir_exists(join(".", "build"))
+    ensure_dir_exists(join(".", build_folder_name))
     with Pool() as pool:
         return pool.starmap(
             compile_file_if_modified,
@@ -172,15 +173,15 @@ def compile(build_json):
 
 def get_ldflags(build_json):
     return [
-        *build_json.get("ldflags", []),
+        *build_json.get(ldflags_name, []),
         *get_pkg_config_flags(build_json.get('libs', []), "libs")
     ]
 
 
 def get_c_flags(build_json):
     return [
-        *build_json.get("cflags", []),
-        *get_pkg_config_flags(build_json.get('libs', []), "cflags")
+        *build_json.get(cflags_name, []),
+        *get_pkg_config_flags(build_json.get('libs', []), cflags_name)
     ]
 
 
@@ -196,7 +197,7 @@ def get_o_file_from_c_file(c_file_path):
     return replace_ext(
         replace_path(
             c_file_path,
-            join("build")
+            join(build_folder_name)
         ),
         "o"
     )
@@ -210,7 +211,7 @@ def get_compile_args(build_json):
             c_file_path,
             get_o_file_from_c_file(c_file_path)
         )
-        for c_file_path in get_files_in_dir(join(".", "src"))
+        for c_file_path in get_files_in_dir(join(".", src_folder_name))
         if c_file_path.endswith(".c")
     ]
 
@@ -280,7 +281,7 @@ def parse_args():
         dest="command",
         help="Pick a command to run."
     )
-    subparsers.add_parser("build")
+    subparsers.add_parser(build_folder_name)
     subparsers.add_parser("run")
     subparsers.add_parser("clean")
     subparsers.add_parser("init")
@@ -298,8 +299,8 @@ def validate(build_json):
     validate_dict(
         build_json,
         [],
-        ["cc", "type", "cflags", "ldflags", "lib-dirs", "libs", "version"],
-        ["cc", "type", "version"],
+        ["cc", type_name, cflags_name, ldflags_name, "lib-dirs", "libs", "version"],
+        ["cc", type_name, "version"],
         lambda x, path: validate_build_json(x, path, build_json)
     )
 
@@ -307,14 +308,15 @@ def validate(build_json):
 def validate_build_json(value, path, json):
     if path[-1] == "cc":
         validate_type(value, path, str)
-    if path[-1] == "type":
+    if path[-1] == type_name:
         validate_type(value, path, str)
         valid_libs = ["exe", "dynamic-lib", "static-lib"]
         if type not in valid_libs:
-            raise PathValidationException(["type", f"must be in {valid_libs}"])
-    if path[-1] == "cflags":
+            raise PathValidationException(
+                [type_name, f"must be in {valid_libs}"])
+    if path[-1] == cflags_name:
         validate_list_of_flags(value, path)
-    if path[-1] == "ldflags":
+    if path[-1] == ldflags_name:
         validate_list_of_flags(value, path)
     if path[-1] == "lib-dirs":
         validate_list(
