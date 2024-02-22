@@ -24,18 +24,9 @@ def main():
         install_parser = subparsers.add_parser(cmd_install)
         install_parser.add_argument(package_manager_name)
 
-        build_parser.add_argument(
-            'build_file',
-            nargs='?',
-            default='build.json',
-            help='Build file name.'
-        )
-        run_parser.add_argument(
-            'build_file',
-            nargs='?',
-            default='build.json',
-            help='Build file name.'
-        )
+        add_build_arg(run_parser)
+        add_build_arg(build_parser)
+        add_build_arg(install_parser)
 
         build_parser.set_defaults(func=build_cmd)
         run_parser.set_defaults(func=run_cmd)
@@ -46,6 +37,17 @@ def main():
         args.func(args)
     except FileNotFoundError as e:
         print(e)
+    except Exception as e:
+        print(e)
+
+
+def add_build_arg(parser):
+    parser.add_argument(
+        'build_file',
+        nargs='?',
+        default='build.json',
+        help='Build file name.'
+    )
 
 
 def clean_cmd(args):
@@ -77,6 +79,7 @@ def install_cmd(args):
 
 
 def build_cmd(args):
+    start = time()
     build_json = read_json_file(args.build_file)
     validate(build_json, build_json_schema)
     environ[pkg_config_name] = ";".join([
@@ -86,7 +89,9 @@ def build_cmd(args):
     compile_results = compile(build_json)
     for compile_result in compile_results:
         if compile_result["modified"]:
-            pass
+            t = round(compile_result["duration"], 2)
+            print_blue(f"Compiled {compile_result['file']} in {t}s.")
+            print(compile_result["stderr"])
         else:
             print_grey(f"Unchanged: {compile_result['file']}")
     {
@@ -94,9 +99,8 @@ def build_cmd(args):
         type_dynamic_lib: link_dynamic_lib,
         type_static_lib: create_static_lib
     }[build_json[key_type]](build_json)
-    return {
-        "compile_result": compile_results
-    }
+    t = round(time() - start, 2)
+    print_green(f"Build in {t}s.")
 
 
 def link_exe(build_json):
@@ -162,7 +166,7 @@ def create_static_lib(build_json):
     package_static_lib(
         join(
             build_dir,
-            f"{lib_name}{get_name()}{get_lib_extension()}"
+            f"{lib_name}{build_json['name']}{get_lib_extension()}"
         ),
         *get_o_files_existing()
     )
@@ -184,7 +188,7 @@ def get_c_flags(cflags, libs):
 def get_includes(cc, c_flags, c_file_path):
     return set([
         abspath(include.lstrip('.').strip())
-        for include in cs_get_output([cc, *c_flags, "-M", "-H", c_file_path]).split('\n')
+        for include in cs_get_output([cc, *c_flags, "-M", "-H", c_file_path]).stdout.split('\n')
         if include.startswith(".")
     ])
 
@@ -229,11 +233,14 @@ def get_c_file_code_mod_time(cc, c_flags, c_file_path):
 def compile_file_if_modified(cc, c_flags, c_file_path, o_file_path):
     start = time()
     if not exists(o_file_path) or was_c_file_modified(cc, c_flags, c_file_path, o_file_path):
-        compile_file(cc, c_flags, c_file_path, o_file_path)
+        result = compile_file(cc, c_flags, c_file_path, o_file_path)
         return {
             "file": c_file_path,
             "modified": True,
-            "duration": time() - start
+            "duration": time() - start,
+            "args": result.args,
+            "stdout": result.stdout,
+            "stderr": result.stderr
         }
     else:
         return {
@@ -282,7 +289,7 @@ def get_pkg_config_flags(libs, mode):
     return [
         flag
         for lib in libs
-        for flag in cs_get_output([f"pkg-config --{mode} {lib}"]).strip().split(" ")
+        for flag in cs_get_output([f"pkg-config --{mode} {lib}"]).stdout.strip().split(" ")
     ]
 
 
@@ -299,7 +306,7 @@ def cs_get_output(cmd):
     if out.returncode != 0:
         raise Exception(out.stderr)
     else:
-        return out.stdout
+        return out
 
 
 def cs_run(cmd):
