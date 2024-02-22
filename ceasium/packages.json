@@ -1,0 +1,722 @@
+{
+  "glib-2.0": {
+    "apt": "libglib2.0-dev",
+    "pacman": " glib2"
+  },
+  "gtk+-3.0": {
+    "apt": "libgtk-3-dev",
+    "pacman": " gtk3"
+  },
+  "openssl": {
+    "apt": "libssl-dev",
+    "pacman": " openssl"
+  },
+  "sqlite3": {
+    "apt": "libsqlite3-dev",
+    "pacman": " sqlite"
+  },
+  "xml-2.0": {
+    "apt": "libxml2-dev",
+    "pacman": "libxml2"
+  },
+  "alsa": {
+    "apt": "libasound2-dev",
+    "pacman": " alsa-lib"
+  },
+  "zlib": {
+    "apt": " zlib1g-dev",
+    "pacman": " zlib"
+  },
+  "png": {
+    "apt": "libpng-dev",
+    "pacman": "libpng"
+  },
+  "jpeg": {
+    "apt": "libjpeg-dev",
+    "pacman": "libjpeg-turbo"
+  },
+  "curl": {
+    "apt": "libcurl4-openssl-dev",
+    "pacman": "libcurl"
+  },
+  "event": {
+    "apt": "libevent-dev",
+    "pacman": "libevent"
+  },
+  "yaml": {
+    "apt": "libyaml-dev",
+    "pacman": "libyaml"
+  },
+  "uuid": {
+    "apt": " uuid-dev",
+    "pacman": " util-linux"
+  },
+  "ffi": {
+    "apt": "libffi-dev",
+    "pacman": "libffi"
+  },
+  "ncurses": {
+    "apt": "libncurses5-dev",
+    "pacman": " ncurses"
+  },
+  "udev": {
+    "apt": "libudev-dev",
+    "pacman": " systemd"
+  },
+  "json-c": {
+    "apt": "libjson-c-dev",
+    "pacman": " json-c"
+  },
+  "readline": {
+    "apt": "libreadline-dev",
+    "pacman": " readline"
+  },
+  "mysqlclient": {
+    "apt": "libmysqlclient-dev",
+    "pacman": " mariadb-connector-c"
+  },
+  "pq": {
+    "apt": "libpq-dev",
+    "pacman": "libpq"
+  },
+  "xcb": {
+    "apt": "libxcb1-dev",
+    "pacman": "libxcb"
+  },
+  "x11": {
+    "apt": "libx11-dev",
+    "pacman": "libx11"
+  },
+  "xrandr": {
+    "apt": "libxrandr-dev",
+    "pacman": "libxrandr"
+  },
+  "xinerama": {
+    "apt": "libxinerama-dev",
+    "pacman": "libxinerama"
+  },
+  "xext": {
+    "apt": "libxext-dev",
+    "pacman": "libxext"
+  },
+  "xt": {
+    "apt": "libxt-dev",
+    "pacman": "libxt"
+  },
+  "xmu": {
+    "apt": "libxmu-dev",
+    "pacman": "libxmu"
+  },
+  "xss": {
+    "apt": "libxss-dev",
+    "pacman": "libxss"
+  },
+  "xtst": {
+    "apt": "libxtst-dev",
+    "pacman": "libxtst"
+  },
+  "pulse": {
+    "apt": "libpulse-dev",
+    "pacman": " pulseaudio"
+  },
+  "gpg-error": {
+    "apt": "libgpg-error-dev",
+    "pacman": "libgpg-error"
+  },
+  "gcrypt": {
+    "apt": "libgcrypt20-dev",
+    "pacman": "libgcrypt"
+  },
+  "gnutls": {
+    "apt": "libgnutls28-dev",
+    "pacman": " gnutls"
+  },
+  "jpeg-turbo": {
+    "apt": "libjpeg-turbo8-dev",
+    "pacman": "libjpeg-turbo"
+  },
+  "tiff": {
+    "apt": "libtiff5-dev",
+    "pacman": "libtiff"
+  },
+  "xslt": {
+    "apt": "libxslt1-dev",
+    "pacman": "libxslt"
+  },
+  "microhttpd": {
+    "apt": "libmicrohttpd-dev",
+    "pacman": "libmicrohttpd"
+  },
+  "sodium": {
+    "apt": "libsodium-dev",
+    "pacman": "libsodium"
+  },
+  "lzma": {
+    "apt": "liblzma-dev",
+    "pacman": " xz-utils"
+  },
+  "jemalloc": {
+    "apt": "libjemalloc-dev",
+    "pacman": " jemalloc"
+  },
+  "mpg123": {
+    "apt": "libmpg123-dev",
+    "pacman": "libmpg123"
+  },
+  "vorbis": {
+    "apt": "libvorbis-dev",
+    "pacman": "libvorbis"
+  },
+  "flac": {
+    "apt": "libflac-dev",
+    "pacman": "libflac"
+  },
+  "ogg": {
+    "apt": "libogg-dev",
+    "pacman": "libogg"
+  },
+  "theora": {
+    "apt": "libtheora-dev",
+    "pacman": "libtheora"
+  },
+  "opus": {
+    "apt": "libopus-dev",
+    "pacman": "libopus"
+  },
+  "tool": {
+    "apt": "libtool",
+    "pacman": "libtool"
+  },
+  "pcre": {
+    "apt": "libpcre3-dev",
+    "pacman": " pcre"
+  },
+  "atlas": {
+    "apt": "libatlas-base-dev",
+    "pacman": "libatlas"
+  },
+  "lapack": {
+    "apt": "liblapack-dev",
+    "pacman": "liblapack"
+  },
+  "blas": {
+    "apt": "libblas-dev",
+    "pacman": "libblas"
+  },
+  "gmp": {
+    "apt": "libgmp-dev",
+    "pacman": "libgmp"
+  },
+  "mpfr": {
+    "apt": "libmpfr-dev",
+    "pacman": "libmpfr"
+  },
+  "mpc": {
+    "apt": "libmpc-dev",
+    "pacman": "libmpc"
+  },
+  "sqlite3": {
+    "apt": "libsqlite3-dev",
+    "pacman": " sqlite"
+  },
+  "ldap": {
+    "apt": "libldap2-dev",
+    "pacman": "libldap"
+  },
+  "sasl": {
+    "apt": "libsasl2-dev",
+    "pacman": "libsasl"
+  },
+  "ssl": {
+    "apt": "libssl-dev",
+    "pacman": " openssl"
+  },
+  "crypto": {
+    "apt": "libssl-dev",
+    "pacman": " openssl"
+  },
+  "xml2": {
+    "apt": "libxml2-dev",
+    "pacman": "libxml2"
+  },
+  "usb-1.0": {
+    "apt": "libusb-1.0-0-dev",
+    "pacman": "libusb-1.0"
+  },
+  "usb": {
+    "apt": "libusb-dev",
+    "pacman": "libusb"
+  },
+  "v4l": {
+    "apt": "libv4l-dev",
+    "pacman": "libv4l"
+  },
+  "x264": {
+    "apt": "libx264-dev",
+    "pacman": "libx264"
+  },
+  "x265": {
+    "apt": "libx265-dev",
+    "pacman": "libx265"
+  },
+  "vpx": {
+    "apt": "libvpx-dev",
+    "pacman": "libvpx"
+  },
+  "avcodec": {
+    "apt": "libavcodec-dev",
+    "pacman": "libavcodec"
+  },
+  "avformat": {
+    "apt": "libavformat-dev",
+    "pacman": "libavformat"
+  },
+  "avutil": {
+    "apt": "libavutil-dev",
+    "pacman": "libavutil"
+  },
+  "swscale": {
+    "apt": "libswscale-dev",
+    "pacman": "libswscale"
+  },
+  "avresample": {
+    "apt": "libavresample-dev",
+    "pacman": "libavresample"
+  },
+  "opencv": {
+    "apt": "libopencv-dev",
+    "pacman": "libopencv"
+  },
+  "gtk-3": {
+    "apt": "libgtk-3-dev",
+    "pacman": " gtk3"
+  },
+  "gdk-pixbuf": {
+    "apt": "libgdk-pixbuf2.0-dev",
+    "pacman": "libgdk-pixbuf2.0"
+  },
+  "cairo": {
+    "apt": "libcairo2-dev",
+    "pacman": "libcairo2"
+  },
+  "pango": {
+    "apt": "libpango1.0-dev",
+    "pacman": "libpango-1.0"
+  },
+  "atk": {
+    "apt": "libatk-1.0-0-dev",
+    "pacman": "libatk1.0"
+  },
+  "freetype": {
+    "apt": "libfreetype6-dev",
+    "pacman": "libfreetype6"
+  },
+  "fontconfig": {
+    "apt": "libfontconfig1-dev",
+    "pacman": "libfontconfig1"
+  },
+  "harfbuzz": {
+    "apt": "libharfbuzz-dev",
+    "pacman": "libharfbuzz"
+  },
+  "fribidi": {
+    "apt": "libfribidi-dev",
+    "pacman": "libfribidi"
+  },
+  "rsvg": {
+    "apt": "librsvg2-dev",
+    "pacman": "librsvg2"
+  },
+  "glib": {
+    "apt": "libglib2.0-dev",
+    "pacman": " glib2"
+  },
+  "json-glib": {
+    "apt": "libjson-glib-dev",
+    "pacman": "libjson-glib"
+  },
+  "sqlite": {
+    "apt": "libsqlite3-dev",
+    "pacman": " sqlite"
+  },
+  "poppler": {
+    "apt": "libpoppler-glib-dev",
+    "pacman": "libpoppler-glib"
+  },
+  "curlpp": {
+    "apt": "libcurl4-gnutls-dev",
+    "pacman": "libcurlpp"
+  },
+  "git2": {
+    "apt": "libgit2-dev",
+    "pacman": "libgit2"
+  },
+  "gmpxx": {
+    "apt": "libgmp-dev",
+    "pacman": "libgmp"
+  },
+  "pcl": {
+    "apt": "libpcl-dev",
+    "pacman": "libpcl"
+  },
+  "glew": {
+    "apt": "libglew-dev",
+    "pacman": "libglew"
+  },
+  "glfw": {
+    "apt": "libglfw3-dev",
+    "pacman": "libglfw"
+  },
+  "glm": {
+    "apt": "libglm-dev",
+    "pacman": "libglm"
+  },
+  "assimp": {
+    "apt": "libassimp-dev",
+    "pacman": " assimp"
+  },
+  "flann": {
+    "apt": "libflann-dev",
+    "pacman": "libflann"
+  },
+  "openblas": {
+    "apt": "libopenblas-dev",
+    "pacman": "libopenblas"
+  },
+  "lapacke": {
+    "apt": "liblapacke-dev",
+    "pacman": "liblapacke"
+  },
+  "arpack": {
+    "apt": "libarpack2-dev",
+    "pacman": "libarpack"
+  },
+  "umfpack": {
+    "apt": "libumfpack5.7.1",
+    "pacman": "libumfpack"
+  },
+  "suite-sparse": {
+    "apt": "libsuitesparse-dev",
+    "pacman": "libsuitesparse"
+  },
+  "metis": {
+    "apt": "libmetis-dev",
+    "pacman": "libmetis"
+  },
+  "gsl": {
+    "apt": "libgsl-dev",
+    "pacman": "libgsl"
+  },
+  "protobuf": {
+    "apt": "libprotobuf-dev",
+    "pacman": "libprotobuf"
+  },
+  "grpc": {
+    "apt": "libgrpc++-dev",
+    "pacman": "libgrpc++"
+  },
+  "flatbuffers": {
+    "apt": "libflatbuffers-dev",
+    "pacman": "libflatbuffers"
+  },
+  "zmq": {
+    "apt": "libzmq3-dev",
+    "pacman": "libzmq3"
+  },
+  "nng": {
+    "apt": "libnng-dev",
+    "pacman": "libnng"
+  },
+  "websockets": {
+    "apt": "libwebsockets-dev",
+    "pacman": "libwebsockets"
+  },
+  "mosquitto": {
+    "apt": "libmosquitto-dev",
+    "pacman": "libmosquitto"
+  },
+  "uv": {
+    "apt": "libuv1-dev",
+    "pacman": "libuv1"
+  },
+  "jansson": {
+    "apt": "libjansson4",
+    "pacman": "libjansson"
+  },
+  "jwt": {
+    "apt": "libjwt-dev",
+    "pacman": "libjwt"
+  },
+  "brotli": {
+    "apt": "libbrotli-dev",
+    "pacman": "libbrotli"
+  },
+  "lz4": {
+    "apt": "liblz4-dev",
+    "pacman": "liblz4"
+  },
+  "zstd": {
+    "apt": "libzstd-dev",
+    "pacman": "libzstd"
+  },
+  "snappy": {
+    "apt": "libsnappy-dev",
+    "pacman": "libsnappy"
+  },
+  "thrift": {
+    "apt": "libthrift-dev",
+    "pacman": "libthrift"
+  },
+  "protobuf-c": {
+    "apt": "libprotobuf-c-dev",
+    "pacman": " protobuf-c"
+  },
+  "msgpack": {
+    "apt": "libmsgpack-dev",
+    "pacman": "libmsgpack"
+  },
+  "capnproto": {
+    "apt": "libcapnp-dev",
+    "pacman": "libcapnproto"
+  },
+  "c-ares": {
+    "apt": "libc-ares-dev",
+    "pacman": "libc-ares"
+  },
+  "nghttp2": {
+    "apt": "libnghttp2-dev",
+    "pacman": "libnghttp2"
+  },
+  "nghttp3": {
+    "apt": "libnghttp3-dev",
+    "pacman": "libnghttp3"
+  },
+  "libssh": {
+    "apt": "libssh2-1-dev",
+    "pacman": "libssh2"
+  },
+  "wolfssl": {
+    "apt": "libwolfssl-dev",
+    "pacman": "libwolfssl"
+  },
+  "mbedtls": {
+    "apt": "libmbedtls-dev",
+    "pacman": "libmbedtls"
+  },
+  "boringssl": {
+    "apt": "libssl-dev",
+    "pacman": "libssl"
+  },
+  "gflags": {
+    "apt": "libgflags-dev",
+    "pacman": "libgflags"
+  },
+  "glog": {
+    "apt": "libgoogle-glog-dev",
+    "pacman": "libglog"
+  },
+  "benchmark": {
+    "apt": "libbenchmark-dev",
+    "pacman": "libbenchmark"
+  },
+  "abseil": {
+    "apt": "libabsl-dev",
+    "pacman": "libabsl"
+  },
+  "cppunit": {
+    "apt": "libcppunit-dev",
+    "pacman": "libcppunit"
+  },
+  "googletest": {
+    "apt": "libgtest-dev",
+    "pacman": " googletest"
+  },
+  "googlemock": {
+    "apt": "libgmock-dev",
+    "pacman": " google-mock"
+  },
+  "fmt": {
+    "apt": "libfmt-dev",
+    "pacman": " fmt"
+  },
+  "spdlog": {
+    "apt": "libspdlog-dev",
+    "pacman": "libspdlog"
+  },
+  "boost": {
+    "apt": "libboost-all-dev",
+    "pacman": "libboost-all"
+  },
+  "eigen": {
+    "apt": "libeigen3-dev",
+    "pacman": "libeigen3"
+  },
+  "armadillo": {
+    "apt": "libarmadillo-dev",
+    "pacman": "libarmadillo"
+  },
+  "dlib": {
+    "apt": "libdlib-dev",
+    "pacman": "libdlib"
+  },
+  "vtk": {
+    "apt": "libvtk7-dev",
+    "pacman": "libvtk7"
+  },
+  "itk": {
+    "apt": "libinsighttoolkit4-dev",
+    "pacman": "libinsighttoolkit4"
+  },
+  "hdf5": {
+    "apt": "libhdf5-dev",
+    "pacman": "libhdf5"
+  },
+  "netcdf": {
+    "apt": "libnetcdf-dev",
+    "pacman": "libnetcdf"
+  },
+  "sdl2": {
+    "apt": "libsdl2-dev",
+    "pacman": "libsdl2"
+  },
+  "sfml": {
+    "apt": "libsfml-dev",
+    "pacman": "libsfml"
+  },
+  "allegro": {
+    "apt": "liballegro5-dev",
+    "pacman": "liballegro"
+  },
+  "wxgtk": {
+    "apt": "libwxgtk3.0-dev",
+    "pacman": "libwxgtk"
+  },
+  "qt": {
+    "apt": "libqt5-dev",
+    "pacman": "libqt5"
+  },
+  "gtk-2": {
+    "apt": "libgtk2.0-dev",
+    "pacman": " gtk2"
+  },
+  "sdl": {
+    "apt": "libsdl1.2-dev",
+    "pacman": "libsdl"
+  },
+  "poco": {
+    "apt": "libpoco-dev",
+    "pacman": "libpoco"
+  },
+  "ace": {
+    "apt": "libace-dev",
+    "pacman": "libace"
+  },
+  "boost-python": {
+    "apt": "libboost-python-dev",
+    "pacman": "libboost-python"
+  },
+  "xgboost": {
+    "apt": "libxgboost-dev",
+    "pacman": "libxgboost"
+  },
+  "tensorflow": {
+    "apt": "libtensorflow-dev",
+    "pacman": "libtensorflow"
+  },
+  "torch": {
+    "apt": "libtorch-dev",
+    "pacman": "libtorch"
+  },
+  "onnx": {
+    "apt": "libonnx-dev",
+    "pacman": "libonnx"
+  },
+  "caffe": {
+    "apt": "libcaffe-dev",
+    "pacman": "libcaffe"
+  },
+  "mxnet": {
+    "apt": "libmxnet-dev",
+    "pacman": "libmxnet"
+  },
+  "chainer": {
+    "apt": "libchainer-dev",
+    "pacman": "libchainer"
+  },
+  "cntk": {
+    "apt": "libcntk-dev",
+    "pacman": "libcntk"
+  },
+  "pytorch": {
+    "apt": "libtorch-dev",
+    "pacman": "libtorch"
+  },
+  "mlpack": {
+    "apt": "libmlpack-dev",
+    "pacman": "libmlpack"
+  },
+  "kaldi": {
+    "apt": "libkaldi-dev",
+    "pacman": "libkaldi"
+  },
+  "nlopt": {
+    "apt": "libnlopt-dev",
+    "pacman": "libnlopt"
+  },
+  "ode": {
+    "apt": "libode-dev",
+    "pacman": "libode"
+  },
+  "bullet": {
+    "apt": "libbullet-dev",
+    "pacman": "libbullet"
+  },
+  "odeint": {
+    "apt": "libodeint-dev",
+    "pacman": "libodeint"
+  },
+  "chipmunk": {
+    "apt": "libchipmunk-dev",
+    "pacman": "libchipmunk"
+  },
+  "box2d": {
+    "apt": "libbox2d-dev",
+    "pacman": "libbox2d"
+  },
+  "liquidfun": {
+    "apt": "libliquidfun-dev",
+    "pacman": "libliquidfun"
+  },
+  "gamekit": {
+    "apt": "libgamekit-dev",
+    "pacman": "libgamekit"
+  },
+  "cegui": {
+    "apt": "libcegui-mk2-dev",
+    "pacman": "libcegui"
+  },
+  "ogre": {
+    "apt": "libogre-1.12-dev",
+    "pacman": "libogre-1.12"
+  },
+  "irrlicht": {
+    "apt": "libirrlicht-dev",
+    "pacman": "libirrlicht"
+  },
+  "fmod": {
+    "apt": "libfmodex-dev",
+    "pacman": "libfmod"
+  },
+  "sdl2-image": {
+    "apt": "libsdl2-image-dev",
+    "pacman": "libsdl2-image"
+  },
+  "sdl2-mixer": {
+    "apt": "libsdl2-mixer-dev",
+    "pacman": "libsdl2-mixer"
+  },
+  "sdl2-ttf": {
+    "apt": "libsdl2-ttf-dev",
+    "pacman": "libsdl2-ttf"
+  }
+}
