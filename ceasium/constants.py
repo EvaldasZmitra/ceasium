@@ -8,7 +8,6 @@ include_dir = "include"
 main_c_file_name = "main.c"
 main_h_file_name = "main.h"
 gitignore_path = ".gitignore"
-build_json_path = "build.json"
 
 flags_c = "cflags"
 flags_ld = "ldflags"
@@ -34,6 +33,9 @@ key_cc = "cc"
 key_type = "type"
 key_libs = "libs"
 key_lib_dirs = "lib-dirs"
+key_dirs = "dirs"
+key_exclude = "exclude"
+key_name = "name"
 
 lib_name = "lib"
 version_name = "version"
@@ -85,6 +87,37 @@ class colors:
     LIGHT_GREY = colors_arr[10]
     DARK_GREY = colors_arr[11]
 
+
+build_json_schema = {
+    "type": "object",
+    "properties": {
+        "cc": {"type": "string"},
+        "cc": {"name": "string"},
+        "version": {"type": "string"},
+        "type": {"type": "string", "enum": ["exe", "dynamic-lib", "static-lib"]},
+        "cflags": {
+            "type": "array",
+            "items": {"type": "string"},
+        },
+        "ldflags": {
+            "type": "array",
+            "items": {"type": "string"},
+        },
+        "libs": {
+            "type": "array",
+            "items": {"type": "string"},
+        },
+        "dirs": {
+            "type": "array",
+            "items": {"type": "string"},
+        },
+        "exclude": {
+            "type": "array",
+            "items": {"type": "string"},
+        }
+    },
+    "required": ["cc", "version", "type", "name"],
+}
 
 include_template = """
 #ifndef MAIN_H

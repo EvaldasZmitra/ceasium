@@ -6,40 +6,46 @@ from os import walk, makedirs, getcwd
 from os import environ
 from argparse import ArgumentParser
 from shutil import rmtree
-from .constants import colors, pkg_conf_template, get_packages, test_main_path, src_main_path, include_main_path, help_name, package_manager_name, command_help, command_name, missing_name, cmd_install, gitignore_path, lib_name, version_name, os_linux, os_mac, os_windows, key_cc, type_static_lib, pkg_config_name, key_lib_dirs, key_libs, type_dynamic_lib, type_exe, cmd_clean, cmd_init, cmd_run, flags_ld, key_type, include_dir, flags_c, src_dir, build_dir, build_json_path, include_template, build_config_template, main_template, test_template, git_ignore_template
+from .constants import key_name, key_exclude, key_dirs, build_json_schema, colors, get_packages, test_main_path, src_main_path, include_main_path, help_name, package_manager_name, command_help, command_name, cmd_install, gitignore_path, lib_name, os_linux, os_mac, os_windows, key_cc, type_static_lib, pkg_config_name, key_lib_dirs, key_libs, type_dynamic_lib, type_exe, cmd_clean, cmd_init, cmd_run, flags_ld, key_type, flags_c, src_dir, build_dir, include_template, build_config_template, main_template, test_template, git_ignore_template
 from time import time
 import platform
-
-
-class ValidationException(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-
-
-class PathValidationException(ValidationException):
-    def __init__(self, path, message):
-        path = make_path(path)
-        super().__init__(f"{path} {message}.")
+from jsonschema import validate
 
 
 def main():
-    parser = ArgumentParser(description=help_name)
-    subparsers = parser.add_subparsers(dest=command_name, help=command_help)
-    build_parser = subparsers.add_parser(build_dir)
-    run_parser = subparsers.add_parser(cmd_run)
-    clean_parser = subparsers.add_parser(cmd_clean)
-    init_parser = subparsers.add_parser(cmd_init)
-    install_parser = subparsers.add_parser(cmd_install)
-    install_parser.add_argument(package_manager_name)
+    try:
+        parser = ArgumentParser(description=help_name)
+        subparsers = parser.add_subparsers(
+            dest=command_name, help=command_help)
+        build_parser = subparsers.add_parser(build_dir)
+        run_parser = subparsers.add_parser(cmd_run)
+        clean_parser = subparsers.add_parser(cmd_clean)
+        init_parser = subparsers.add_parser(cmd_init)
+        install_parser = subparsers.add_parser(cmd_install)
+        install_parser.add_argument(package_manager_name)
 
-    build_parser.set_defaults(func=build_cmd)
-    run_parser.set_defaults(func=run_cmd)
-    clean_parser.set_defaults(func=clean_cmd)
-    init_parser.set_defaults(func=init_cmd)
-    install_parser.set_defaults(func=install_cmd)
+        build_parser.add_argument(
+            'build_file',
+            nargs='?',
+            default='build.json',
+            help='Build file name.'
+        )
+        run_parser.add_argument(
+            'build_file',
+            nargs='?',
+            default='build.json',
+            help='Build file name.'
+        )
 
-    args = parser.parse_args()
-    args.func(args)
+        build_parser.set_defaults(func=build_cmd)
+        run_parser.set_defaults(func=run_cmd)
+        clean_parser.set_defaults(func=clean_cmd)
+        init_parser.set_defaults(func=init_cmd)
+        install_parser.set_defaults(func=install_cmd)
+        args = parser.parse_args()
+        args.func(args)
+    except FileNotFoundError as e:
+        print(e)
 
 
 def clean_cmd(args):
@@ -48,12 +54,14 @@ def clean_cmd(args):
 
 
 def run_cmd(args):
-    path = join(build_dir, get_name())
-    cs_run([path])
+    build_json = read_json_file(args.build_file)
+    validate(build_json, build_json_schema)
+    path = join(build_dir, build_json[key_name])
+    print(cs_run([path]))
 
 
 def init_cmd(args):
-    safe_write(build_json_path, build_config_template)
+    safe_write(args.build_file, build_config_template)
     safe_write(src_main_path, main_template)
     safe_write(test_main_path, test_template)
     safe_write(gitignore_path, git_ignore_template)
@@ -61,14 +69,16 @@ def init_cmd(args):
 
 
 def install_cmd(args):
-    build_json = read_json_file(build_json_path)
+    build_json = read_json_file(args.build_file)
+    validate(build_json, build_json_schema)
     packages = get_packages()
     for lib in build_json.get(key_libs, []):
         cs_get_output(packages[lib][args.package_manager])
 
 
 def build_cmd(args):
-    build_json = read_json_file(build_json_path)
+    build_json = read_json_file(args.build_file)
+    validate(build_json, build_json_schema)
     environ[pkg_config_name] = ";".join([
         environ.get(pkg_config_name, ""),
         *[abspath(dir) for dir in build_json.get(key_lib_dirs, [])]
@@ -98,9 +108,12 @@ def link_exe(build_json):
     return cs_get_output(
         [
             build_json[key_cc],
-            *get_o_files_existing(),
+            *[
+                f for f in get_o_files_existing()
+                if basename(f) not in build_json.get(key_exclude, [])
+            ],
             "-o",
-            join(build_dir, replace_ext(get_name(), extension)),
+            join(build_dir, replace_ext(build_json[key_name], extension)),
             *[
                 *build_json.get(flags_ld, []),
                 *get_pkg_config_flags(build_json.get(key_libs, []), key_libs)
@@ -115,24 +128,13 @@ def link_dynamic_lib(build_json):
         os_mac: "dynlib",
         os_windows: "dll"
     }[platform.system()]
-    create_pkg_conf(
-        [
-            *build_json.get(flags_ld, []),
-            *[
-                *get_pkg_config_flags(build_json.get(key_libs, []), key_libs),
-                f"-L{abspath(join(getcwd(), build_dir))}"
-            ]
-        ],
-        [f"-I{join(getcwd(), include_dir)}"],
-        build_json['version']
-    )
     return cs_get_output(
         [
             build_json[key_cc],
             "-shared",
             *get_o_files_existing(),
             "-o",
-            join(build_dir, replace_ext(get_name(), extension)),
+            join(build_dir, replace_ext(build_json[key_name], extension)),
             *[
                 *build_json.get(flags_ld, []),
                 *get_pkg_config_flags(build_json.get(key_libs, []), key_libs)
@@ -149,20 +151,14 @@ def compile(build_json):
             get_compile_args(
                 build_json[key_cc],
                 build_json.get(flags_c, []),
-                build_json.get(key_libs, [])
+                build_json.get(key_libs, []),
+                build_json.get(key_dirs, [src_dir]),
+                build_json.get(key_exclude, [])
             )
         )
 
 
 def create_static_lib(build_json):
-    create_pkg_conf(
-        [
-            *build_json.get(flags_ld, []),
-            *get_pkg_config_flags(build_json.get(key_libs, []), key_libs)
-        ],
-        [f"-I{join(getcwd(), include_dir)}"],
-        build_json['version']
-    )
     package_static_lib(
         join(
             build_dir,
@@ -172,11 +168,12 @@ def create_static_lib(build_json):
     )
 
 
-def get_compile_args(cc, cflags, libs):
+def get_compile_args(cc, cflags, libs, dirs, exclude):
     return [
         (cc, get_c_flags(cflags, libs), c_file_path, c_to_o_file(c_file_path))
-        for c_file_path in get_files_in_dir(join(src_dir))
-        if c_file_path.endswith(".c")
+        for dir in dirs
+        for c_file_path in get_files_in_dir(dir)
+        if c_file_path.endswith(".c") and basename(c_to_o_file(c_file_path)) not in exclude
     ]
 
 
@@ -200,25 +197,6 @@ def get_lib_extension():
     if platform.system() == os_windows:
         extension = f".{lib_name}"
     return extension
-
-
-def get_name():
-    return basename(getcwd())
-
-
-def create_pkg_conf(ldflags, cflags, version):
-    name = get_name()
-    pc_name = replace_ext(name, "pc")
-    pc_path = join(build_dir, pc_name)
-    with open(pc_path, "w") as f:
-        f.write(
-            pkg_conf_template(
-                name,
-                version,
-                " ".join(cflags),
-                " ".join(ldflags)
-            ).replace('\\', '/')
-        )
 
 
 def get_o_files_existing():
@@ -330,87 +308,6 @@ def cs_run(cmd):
         raise Exception(out.stderr)
     else:
         return out.stdout
-
-
-def validate(build_json):
-    validate_dict(
-        build_json,
-        [],
-        [key_cc, key_type, flags_c, flags_ld,
-            key_lib_dirs, key_libs, version_name],
-        [key_cc, key_type, version_name],
-        lambda x, path: validate_build_json(x, path)
-    )
-
-
-def validate_build_json(value, path):
-    if path[-1] == key_cc:
-        validate_type(value, path, str)
-    if path[-1] == key_type:
-        validate_build_type(value, path)
-    if path[-1] == flags_c:
-        validate_list_of_flags(value, path)
-    if path[-1] == flags_ld:
-        validate_list_of_flags(value, path)
-    if path[-1] == key_lib_dirs:
-        validate_list(value, path, lambda x, path: validate_type(x, path, str))
-    if path[-1] == key_libs:
-        validate_list(value, path, lambda x, path: validate_type(x, path, str))
-
-
-def validate_build_type(value, path):
-    validate_type(value, path, str)
-    valid_libs = [type_exe, type_dynamic_lib, type_static_lib]
-    if value not in valid_libs:
-        raise PathValidationException([key_type], f"must be in {valid_libs}")
-
-
-def validate_list_of_flags(flags, path):
-    validate_list(flags, path, validate_flag)
-
-
-def validate_flag(flag, path):
-    validate_type(flag, path, str)
-    if not flag.startswith("-"):
-        raise PathValidationException(path, "is not a valid flag")
-
-
-def validate_dict(obj, path, valid_keys, required_keys, validate):
-    validate_type(obj, path, dict)
-    for key in required_keys:
-        if key not in obj:
-            raise PathValidationException(path + [key], "is required")
-    for key in obj:
-        key_path = path + [key]
-        if key not in valid_keys:
-            raise PathValidationException(key_path, "is not valid")
-        validate(obj[key], key_path)
-
-
-def validate_list(elements, path, validate):
-    validate_type(elements, path, list)
-    for element in elements:
-        validate(element, path + [element])
-
-
-def validate_type(value, path, target_type):
-    if type(value) != target_type:
-        raise PathValidationException(
-            path,
-            f"must be a {target_type.__name__} but is {type(value).__name__}"
-        )
-
-
-def access(json, path):
-    value = json
-    current_path = []
-    for subpath in path:
-        validate_type(value, current_path, dict)
-        current_path.append(subpath)
-        if subpath not in value:
-            raise PathValidationException(current_path, missing_name)
-        value = value[subpath]
-    return value
 
 
 def print_red(text):
