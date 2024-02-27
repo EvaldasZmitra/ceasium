@@ -6,7 +6,7 @@ from os import walk, makedirs
 from os import environ
 from argparse import ArgumentParser
 from shutil import rmtree
-from .constants import os_to_dll_ext, os_to_exe_ext, os_to_lib_ext, key_name, key_exclude, key_dirs, build_json_schema, colors, get_packages, test_main_path, src_main_path, include_main_path, help_name, package_manager_name, command_help, command_name, cmd_install, gitignore_path, lib_name, os_linux, os_mac, os_windows, key_cc, type_static_lib, pkg_config_name, key_lib_dirs, key_libs, type_dynamic_lib, type_exe, cmd_clean, cmd_init, cmd_run, flags_ld, key_type, flags_c, src_dir, build_dir, include_template, build_config_template, main_template, test_template, git_ignore_template
+from .constants import os_to_dll_ext, os_to_exe_ext, os_to_lib_ext, key_name, key_exclude, key_dirs, build_json_schema, colors, test_main_path, src_main_path, include_main_path, help_name, command_help, command_name, gitignore_path, lib_name, type_static_lib, pkg_config_name, key_lib_dirs, key_libs, type_dynamic_lib, type_exe, cmd_clean, cmd_init, flags_ld, key_type, flags_c, src_dir, build_dir, include_template, build_config_template, main_template, test_template, git_ignore_template
 from time import time
 import platform
 from jsonschema import validate
@@ -18,21 +18,14 @@ def main():
         subparsers = parser.add_subparsers(
             dest=command_name, help=command_help)
         build_parser = subparsers.add_parser(build_dir)
-        run_parser = subparsers.add_parser(cmd_run)
         clean_parser = subparsers.add_parser(cmd_clean)
         init_parser = subparsers.add_parser(cmd_init)
-        install_parser = subparsers.add_parser(cmd_install)
-        install_parser.add_argument(package_manager_name)
 
-        add_build_arg(run_parser)
         add_build_arg(build_parser)
-        add_build_arg(install_parser)
 
         build_parser.set_defaults(func=build_cmd)
-        run_parser.set_defaults(func=run_cmd)
         clean_parser.set_defaults(func=clean_cmd)
         init_parser.set_defaults(func=init_cmd)
-        install_parser.set_defaults(func=install_cmd)
         args = parser.parse_args()
         args.func(args)
     except FileNotFoundError as e:
@@ -55,27 +48,12 @@ def clean_cmd(args):
     rmtree(build_dir, True)
 
 
-def run_cmd(args):
-    build_json = read_json_file(args.build_file)
-    validate(build_json, build_json_schema)
-    path = join(build_dir, build_json[key_name])
-    run([path])
-
-
 def init_cmd(args):
     safe_write(args.build_file, build_config_template)
     safe_write(src_main_path, main_template)
     safe_write(test_main_path, test_template)
     safe_write(gitignore_path, git_ignore_template)
     safe_write(include_main_path, include_template)
-
-
-def install_cmd(args):
-    build_json = read_json_file(args.build_file)
-    validate(build_json, build_json_schema)
-    packages = get_packages()
-    for lib in build_json.get(key_libs, []):
-        cs_get_output(packages[lib][args.package_manager])
 
 
 def build_cmd(args):
@@ -115,7 +93,7 @@ def link_exe(build_json):
         if basename(f) not in build_json.get(key_exclude, [])
     ]
     out_path = join(build_dir, replace_ext(build_json[key_name], extension))
-    return cs_get_output([build_json[key_cc], *o_files, "-o", out_path, *ld_flags])
+    return cs_get_output(["gcc", *o_files, "-o", out_path, *ld_flags])
 
 
 def link_dynamic_lib(build_json):
@@ -129,14 +107,14 @@ def link_dynamic_lib(build_json):
         f for f in get_o_files_existing()
         if basename(f) not in build_json.get(key_exclude, [])
     ]
-    return cs_get_output([build_json[key_cc], "-shared", *o_files, "-o", out_path, *ld_flags])
+    return cs_get_output(["gcc", "-shared", *o_files, "-o", out_path, *ld_flags])
 
 
 def compile(build_json):
     ensure_dir_exists(join(build_dir))
     with Pool() as pool:
         args = get_compile_args(
-            build_json[key_cc],
+            "gcc",
             build_json.get(flags_c, []),
             build_json.get(key_libs, []),
             build_json.get(key_dirs, [src_dir]),

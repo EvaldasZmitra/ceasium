@@ -29,7 +29,6 @@ cmd_init = "init"
 cmd_clean = "clean"
 cmd_run = "run"
 
-key_cc = "cc"
 key_type = "type"
 key_libs = "libs"
 key_lib_dirs = "lib-dirs"
@@ -110,9 +109,7 @@ os_to_dll_ext = {
 build_json_schema = {
     "type": "object",
     "properties": {
-        "cc": {"type": "string"},
-        "cc": {"name": "string"},
-        "version": {"type": "string"},
+        "name": {"type": "string"},
         "type": {"type": "string", "enum": ["exe", "dynamic-lib", "static-lib"]},
         "cflags": {
             "type": "array",
@@ -135,7 +132,7 @@ build_json_schema = {
             "items": {"type": "string"},
         }
     },
-    "required": ["cc", "version", "type", "name"],
+    "required": ["type", "name"],
 }
 
 include_template = """
