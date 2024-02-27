@@ -88,6 +88,25 @@ class colors:
     DARK_GREY = colors_arr[11]
 
 
+os_to_lib_ext = {
+    os_linux: ".a",
+    os_mac: ".a",
+    os_windows: f".{lib_name}"
+}
+
+os_to_exe_ext = {
+    os_linux: "",
+    os_mac: "",
+    os_windows: "exe"
+}
+
+os_to_dll_ext = {
+    os_linux: "so",
+    os_mac: "dynlib",
+    os_windows: "dll"
+}
+
+
 build_json_schema = {
     "type": "object",
     "properties": {

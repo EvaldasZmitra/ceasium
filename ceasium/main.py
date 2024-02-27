@@ -2,11 +2,11 @@ from multiprocessing import Pool
 from json import loads
 from subprocess import run
 from os.path import abspath, basename, dirname, join, exists, getmtime, splitext
-from os import walk, makedirs, getcwd
+from os import walk, makedirs
 from os import environ
 from argparse import ArgumentParser
 from shutil import rmtree
-from .constants import key_name, key_exclude, key_dirs, build_json_schema, colors, get_packages, test_main_path, src_main_path, include_main_path, help_name, package_manager_name, command_help, command_name, cmd_install, gitignore_path, lib_name, os_linux, os_mac, os_windows, key_cc, type_static_lib, pkg_config_name, key_lib_dirs, key_libs, type_dynamic_lib, type_exe, cmd_clean, cmd_init, cmd_run, flags_ld, key_type, flags_c, src_dir, build_dir, include_template, build_config_template, main_template, test_template, git_ignore_template
+from .constants import os_to_dll_ext, os_to_exe_ext, os_to_lib_ext, key_name, key_exclude, key_dirs, build_json_schema, colors, get_packages, test_main_path, src_main_path, include_main_path, help_name, package_manager_name, command_help, command_name, cmd_install, gitignore_path, lib_name, os_linux, os_mac, os_windows, key_cc, type_static_lib, pkg_config_name, key_lib_dirs, key_libs, type_dynamic_lib, type_exe, cmd_clean, cmd_init, cmd_run, flags_ld, key_type, flags_c, src_dir, build_dir, include_template, build_config_template, main_template, test_template, git_ignore_template
 from time import time
 import platform
 from jsonschema import validate
@@ -59,7 +59,7 @@ def run_cmd(args):
     build_json = read_json_file(args.build_file)
     validate(build_json, build_json_schema)
     path = join(build_dir, build_json[key_name])
-    print(cs_run([path]))
+    run([path])
 
 
 def init_cmd(args):
@@ -79,6 +79,7 @@ def install_cmd(args):
 
 
 def build_cmd(args):
+    print_green("Building.")
     start = time()
     build_json = read_json_file(args.build_file)
     validate(build_json, build_json_schema)
@@ -104,72 +105,50 @@ def build_cmd(args):
 
 
 def link_exe(build_json):
-    extension = {
-        os_linux: "",
-        os_mac: "",
-        os_windows: "exe"
-    }[platform.system()]
-    return cs_get_output(
-        [
-            build_json[key_cc],
-            *[
-                f for f in get_o_files_existing()
-                if basename(f) not in build_json.get(key_exclude, [])
-            ],
-            "-o",
-            join(build_dir, replace_ext(build_json[key_name], extension)),
-            *[
-                *build_json.get(flags_ld, []),
-                *get_pkg_config_flags(build_json.get(key_libs, []), key_libs)
-            ]
-        ]
-    )
+    extension = os_to_exe_ext[platform.system()]
+    ld_flags = [
+        *build_json.get(flags_ld, []),
+        *get_pkg_config_flags(build_json.get(key_libs, []), key_libs)
+    ]
+    o_files = [
+        f for f in get_o_files_existing()
+        if basename(f) not in build_json.get(key_exclude, [])
+    ]
+    out_path = join(build_dir, replace_ext(build_json[key_name], extension))
+    return cs_get_output([build_json[key_cc], *o_files, "-o", out_path, *ld_flags])
 
 
 def link_dynamic_lib(build_json):
-    extension = {
-        os_linux: "so",
-        os_mac: "dynlib",
-        os_windows: "dll"
-    }[platform.system()]
-    return cs_get_output(
-        [
-            build_json[key_cc],
-            "-shared",
-            *get_o_files_existing(),
-            "-o",
-            join(build_dir, replace_ext(build_json[key_name], extension)),
-            *[
-                *build_json.get(flags_ld, []),
-                *get_pkg_config_flags(build_json.get(key_libs, []), key_libs)
-            ]
-        ]
-    )
+    extension = os_to_dll_ext[platform.system()]
+    ld_flags = [
+        *build_json.get(flags_ld, []),
+        *get_pkg_config_flags(build_json.get(key_libs, []), key_libs)
+    ]
+    out_path = join(build_dir, replace_ext(build_json[key_name], extension))
+    o_files = [
+        f for f in get_o_files_existing()
+        if basename(f) not in build_json.get(key_exclude, [])
+    ]
+    return cs_get_output([build_json[key_cc], "-shared", *o_files, "-o", out_path, *ld_flags])
 
 
 def compile(build_json):
     ensure_dir_exists(join(build_dir))
     with Pool() as pool:
-        return pool.starmap(
-            compile_file_if_modified,
-            get_compile_args(
-                build_json[key_cc],
-                build_json.get(flags_c, []),
-                build_json.get(key_libs, []),
-                build_json.get(key_dirs, [src_dir]),
-                build_json.get(key_exclude, [])
-            )
+        args = get_compile_args(
+            build_json[key_cc],
+            build_json.get(flags_c, []),
+            build_json.get(key_libs, []),
+            build_json.get(key_dirs, [src_dir]),
+            build_json.get(key_exclude, [])
         )
+        return pool.starmap(compile_file_if_modified, args)
 
 
 def create_static_lib(build_json):
-    package_static_lib(
-        join(
-            build_dir,
-            f"{lib_name}{build_json['name']}{get_lib_extension()}"
-        ),
-        *get_o_files_existing()
-    )
+    name = build_json['name']
+    lib_path = join(build_dir, f"{lib_name}{name}{get_lib_extension()}")
+    package_static_lib_cmd(lib_path, *get_o_files_existing())
 
 
 def get_compile_args(cc, cflags, libs, dirs, exclude):
@@ -186,21 +165,16 @@ def get_c_flags(cflags, libs):
 
 
 def get_includes(cc, c_flags, c_file_path):
+    include_out = cs_get_output([cc, *c_flags, "-M", "-H", c_file_path])
     return set([
         abspath(include.lstrip('.').strip())
-        for include in cs_get_output([cc, *c_flags, "-M", "-H", c_file_path]).stdout.split('\n')
+        for include in include_out.stdout.split('\n')
         if include.startswith(".")
     ])
 
 
 def get_lib_extension():
-    if platform.system() == os_linux:
-        extension = ".a"
-    if platform.system() == os_mac:
-        extension = ".a"
-    if platform.system() == os_windows:
-        extension = f".{lib_name}"
-    return extension
+    return os_to_lib_ext[platform.system()]
 
 
 def get_o_files_existing():
@@ -212,11 +186,6 @@ def get_o_files_existing():
 
 def c_to_o_file(c_file_path):
     return replace_ext(replace_path(c_file_path, join(build_dir)), "o")
-
-
-def ensure_dir_exists(dir):
-    if not exists(dir) and dir != '':
-        makedirs(dir)
 
 
 def was_c_file_modified(cc, c_flags, c_file_path, o_file_path):
@@ -233,7 +202,7 @@ def get_c_file_code_mod_time(cc, c_flags, c_file_path):
 def compile_file_if_modified(cc, c_flags, c_file_path, o_file_path):
     start = time()
     if not exists(o_file_path) or was_c_file_modified(cc, c_flags, c_file_path, o_file_path):
-        result = compile_file(cc, c_flags, c_file_path, o_file_path)
+        result = compile_file_cmd(cc, c_flags, c_file_path, o_file_path)
         return {
             "file": c_file_path,
             "modified": True,
@@ -276,6 +245,11 @@ def safe_write(file, text):
         f.write(text)
 
 
+def ensure_dir_exists(dir):
+    if not exists(dir) and dir != '':
+        makedirs(dir)
+
+
 def read_json_file(file):
     with open(file, 'r') as f:
         return loads(f.read())
@@ -287,34 +261,29 @@ def make_path(path):
 
 def get_pkg_config_flags(libs, mode):
     return [
-        flag
-        for lib in libs
-        for flag in cs_get_output([f"pkg-config --{mode} {lib}"]).stdout.strip().split(" ")
+        flag for lib in libs
+        for flag in get_pkg_config_flags_cmd(mode, lib).stdout.strip().split(" ")
     ]
 
 
-def package_static_lib(output_path, o_files):
+def get_pkg_config_flags_cmd(mode, lib):
+    return cs_get_output(["pkg-config", f"--{mode}", lib])
+
+
+def package_static_lib_cmd(output_path, o_files):
     return cs_get_output(["ar", "rcs", output_path, o_files])
 
 
-def compile_file(cc, c_flags, c_file_path, o_file_path):
+def compile_file_cmd(cc, c_flags, c_file_path, o_file_path):
     return cs_get_output([cc, *c_flags, "-c", c_file_path, "-o", o_file_path])
 
 
 def cs_get_output(cmd):
-    out = run(" ".join(cmd), capture_output=True, text=True)
+    out = run(" ".join(cmd), shell=True, capture_output=True, text=True)
     if out.returncode != 0:
         raise Exception(out.stderr)
     else:
         return out
-
-
-def cs_run(cmd):
-    out = run(" ".join(cmd), capture_output=True, text=True)
-    if out.returncode != 0:
-        raise Exception(out.stderr)
-    else:
-        return out.stdout
 
 
 def print_red(text):
