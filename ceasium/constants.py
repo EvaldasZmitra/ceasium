@@ -184,12 +184,3 @@ int main()
 
 git_ignore_template = """build
 """
-
-
-def pkg_conf_template(name, version, cflags, ldflags):
-    return f"""Name: lib{name}
-Description: {name} library
-Version: {version}
-Libs: {ldflags}
-Cflags: {cflags}
-"""
