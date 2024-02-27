@@ -6,7 +6,7 @@ from os import walk, makedirs
 from os import environ
 from argparse import ArgumentParser
 from shutil import rmtree
-from .constants import os_to_dll_ext, os_to_exe_ext, os_to_lib_ext, key_name, key_exclude, key_dirs, build_json_schema, colors, test_main_path, src_main_path, include_main_path, help_name, command_help, command_name, gitignore_path, lib_name, type_static_lib, pkg_config_name, key_lib_dirs, key_libs, type_dynamic_lib, type_exe, cmd_clean, cmd_init, flags_ld, key_type, flags_c, src_dir, build_dir, include_template, build_config_template, main_template, test_template, git_ignore_template
+from .constants import build_config_tests_template, os_to_dll_ext, os_to_exe_ext, os_to_lib_ext, key_name, key_exclude, key_dirs, build_json_schema, colors, test_main_path, src_main_path, include_main_path, help_name, command_help, command_name, gitignore_path, lib_name, type_static_lib, pkg_config_name, key_lib_dirs, key_libs, type_dynamic_lib, type_exe, cmd_clean, cmd_init, flags_ld, key_type, flags_c, src_dir, build_dir, include_template, build_config_template, main_template, test_template, git_ignore_template
 from time import time
 import platform
 from jsonschema import validate
@@ -30,8 +30,6 @@ def main():
         args.func(args)
     except FileNotFoundError as e:
         print(e)
-    except Exception as e:
-        print(e)
 
 
 def add_build_arg(parser):
@@ -49,7 +47,8 @@ def clean_cmd(args):
 
 
 def init_cmd(args):
-    safe_write(args.build_file, build_config_template)
+    safe_write("build.json", build_config_template)
+    safe_write("test.json", build_config_tests_template)
     safe_write(src_main_path, main_template)
     safe_write(test_main_path, test_template)
     safe_write(gitignore_path, git_ignore_template)

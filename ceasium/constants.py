@@ -7,6 +7,7 @@ include_dir = "include"
 
 main_c_file_name = "main.c"
 main_h_file_name = "main.h"
+test_c_file_name = "test.c"
 gitignore_path = ".gitignore"
 
 flags_c = "cflags"
@@ -47,7 +48,7 @@ package_manager_name = "package_manager"
 help_name = "Ceasium build system."
 
 src_main_path = join(src_dir, main_c_file_name)
-test_main_path = join(tests_dir, main_c_file_name)
+test_main_path = join(tests_dir, test_c_file_name)
 include_main_path = join(include_dir, main_h_file_name)
 
 
@@ -145,9 +146,8 @@ include_template = """
 """
 
 build_config_template = """{
-  "cc": "gcc",
-  "version": "0.0.0",
   "type": "exe",
+  "name": "main",
   "cflags": [
     "-I./include",
     "-g",
@@ -157,9 +157,27 @@ build_config_template = """{
     "-fopenmp",
     "-fdiagnostics-color=always"
   ],
-  "ldflags": ["-lopengl32", "-fopenmp"],
-  "lib-dirs": [],
+  "ldflags": [],
   "libs": []
+}
+"""
+
+build_config_tests_template = """{
+  "type": "exe",
+  "name": "test",
+  "cflags": [
+    "-I./include",
+    "-g",
+    "-W",
+    "-Wall",
+    "-O3",
+    "-fopenmp",
+    "-fdiagnostics-color=always"
+  ],
+  "dirs": ["./src", "./tests"],
+  "ldflags": [],
+  "libs": [],
+  "exclude": ["main.o"]
 }
 """
 

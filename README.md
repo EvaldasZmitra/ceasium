@@ -36,10 +36,10 @@ pip install ceasium
 
 Ceasium provides these commands:
 
-- `init`
-- `build`
+- `cs init`
+- `cs build`
   - [Optional] `<src.json/test.json/whatever.json>` specify which json file to build
-- `clean`
+- `cs clean`
 
 ## Configuration
 
