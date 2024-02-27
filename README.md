@@ -1,25 +1,24 @@
 # Ceasium
 
-A hassle free JSON based C build system.
-
-**_Only tested with gcc_**
-
-**_I have only minimally used it myself. It most likely still does not support some critical features for serious C development_**
+A hassle free JSON based GCC build system.
 
 ## Introduction
 
-I like programming in C, but I hate Makefiles and CMake. It takes an effort to learn and they do not have an intuitive syntax so I keep having to look up how to use them. In addition to this, they are quite time consuming to setup. I do admit, they are extremely configurable and portable. However, rarely do I need anything complicated. So I created Ceasium, which is very simple C build system.
-
-It works by creating compiler commands and running them in console.
+C is a great language, but tooling around it like CMake or Make are a bit
+complicated. While CMake is great when it comes to being able to specify a
+complicated build, its syntax has a steep learning curve and is quite cumbersome
+and non-intuitive. Thus I created Ceasium.
 
 ## Features
 
-- It uses pkg-config to add the correct flags for libraries you list in the build file.
-- Parallel compilation of into .o files
-- Caching based on how .h/.c/.o modify times are.
-  - When built .o modification time is set to latest .c file time or its include time. When it is built again it is checked if the new maximum modification time of .c or its include modification time is greater than the .o file modification time. If it is not - it means no recompilation is needed.
-- Installation of missing packages.
-  - This is achieved through defining package manager specific install commands. In the future this can be done automatically based on libraries list.
+Ceasium features most of the things that are regularly needed.
+
+- pkg-config to resolve C_FLAGS and LD_FLAGS
+- Ability to specify your own C_FLAGS and LD_FLAGS
+- Build executables, static and dynamic libraries
+- .c file discovery within a given directory
+- Caching based on modification date including dependency discovery
+- Exclusion of certain .o files when linking
 
 ## Installation
 
@@ -30,29 +29,17 @@ pip install ceasium
 ## Prerequisites
 
 - Python
-- C compiler
-- pkg-config (usually installed by default on all Linux distros, in case of Windows MSYS2 should have it for MACs `brew install pkg-config`).
+- GCC compiler
+- pkg-config
 
 ## Usage
 
 Ceasium provides these commands:
 
-```c
-ceasium init // Creates an empty c project
-ceasium install // installs libraries defined in build.json
-ceasium build // Builds .exe (default), .a or .dll based on configuration
-ceasium clean // Removes entire build directory
-```
-
-- `init`
-  - [Optional] `--path=<value>` defaults to current path
-- `install`
-  - [Optional] `--path=<value>` defaults to current path
-  - [Required] Package manager name.
-- `build`
-  - [Optional] `--path=<value>` defaults to current path
-- `clean`
-  - [Optional] `--path=<value>` defaults to current path
+- `cs init`
+- `cs build`
+  - [Optional] `<src.json/test.json/whatever.json>` specify which json file to build
+- `cs clean`
 
 ## Configuration
 
@@ -60,32 +47,18 @@ Example config:
 
 ```json
 {
-  "name": "myapp",
+  "name": "game-engine",
   "type": "exe",
-  "compiler": "gcc",
-  "libraries": ["glew", "SDL2"],
-  "flags": {
-    "compiler": ["-g"],
-    "linker": ["-lopengl"]
-  },
-  "packages": {
-    "pacman": [
-      "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-glew",
-      "pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-SDL2"
-    ],
-    "apt": [
-      "sudo apt-get install -y libglew-dev",
-      "sudo apt-get install -y libglfw3"
-    ]
-  }
+  "cflags": [
+    "-I./include",
+    "-g",
+    "-W",
+    "-Wall",
+    "-O3",
+    "-fopenmp",
+    "-fdiagnostics-color=always"
+  ],
+  "ldflags": ["-lopengl32", "-fopenmp"],
+  "libs": ["glew", "sdl2", "glib-2.0", "assimp"]
 }
 ```
-
-- `name`: Name of the exe or library that will be built.
-- `type`: ["so", "dll", "exe"] what will be built.
-- `compiler`: ["gcc", "clang" ...other].
-- `libraries`: A list of library names as they would be in pkg-config.
-- `flags:compiler`: extra flags to be added right after compiler command.
-- `flags:linker`: extra flags to be added at the end of compiler command.
-- `package-manager`: package manager commands to use for `ceasium install`. The section of this name should be defined under packages.
-- `packages`: list of commands for package installation based of different package managers.

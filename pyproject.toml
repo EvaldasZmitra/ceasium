@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ceasium"
-version = "0.14.7"
+version = "0.16.0"
 description = "A hassle free C (gcc) JSON build system."
 readme = "README.md"
 authors = ["Evaldas Zmitra <evaldaszmit@gmail.com>"]
@@ -12,7 +12,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-pkgconfig = "^1.5.5"
 
 [tool.poetry.scripts]
-ceasium = "ceasium.main:main"
+cs = "ceasium.main:main"
